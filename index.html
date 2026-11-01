@@ -1,1630 +1,642 @@
-
 <!DOCTYPE html>
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#fff7f1">
 <title>Emotion24-7 | Kesejahteraan Emosi</title>
-
 <style>
-:root{
-  --ink:#293247;
-  --muted:#748096;
-  --bg:#fffaf7;
-  --white:#fff;
-  --line:#eee8e4;
-  --coral:#f27f75;
-  --coral-dark:#df665f;
-  --peach:#ffe2d6;
-  --lav:#eee8ff;
-  --mint:#dff4e9;
+:root {
+  --navy:#273653;
+  --coral:#f27e72;
+  --peach:#fff0e8;
+  --purple:#8d80c8;
+  --lavender:#f0edff;
+  --mint:#dff3e9;
   --yellow:#fff1c9;
-  --shadow:0 12px 34px rgba(61,49,67,.08);
-  --radius:20px;
+  --cream:#fffaf5;
+  --text:#35415a;
+  --muted:#7d8799;
+  --white:#fff;
+  --shadow:0 8px 25px rgba(39,54,83,.08);
 }
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family:Arial,Helvetica,sans-serif;
-}
+body{margin:0;background:#f7f6fb;color:var(--text);font-family:Arial,Helvetica,sans-serif}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer;border:0}
-.app{display:grid;grid-template-columns:255px 1fr;min-height:100vh}
-.sidebar{
-  background:white;border-right:1px solid var(--line);
-  padding:22px 15px;position:sticky;top:0;height:100vh;
-  overflow:auto;z-index:10;
-}
-.brand{display:flex;align-items:center;gap:12px;padding:5px 9px 24px}
-.logo{
-  width:46px;height:46px;border-radius:16px;
-  background:linear-gradient(135deg,#ffb7a7,#c7b8ff);
-  display:grid;place-items:center;font-size:25px;
-}
-.brand strong{font-size:19px}
-.brand small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
-.nav-label{font-size:10px;letter-spacing:1.5px;color:#a0a5b1;font-weight:bold;padding:12px}
-.nav{display:flex;flex-direction:column;gap:5px}
-.nav button{
-  display:flex;align-items:center;gap:11px;
-  padding:11px;border-radius:13px;background:transparent;
-  color:#687287;text-align:left;font-size:13px;font-weight:bold;
-}
-.nav button:hover,.nav button.active{background:#fff0e9;color:#c95e56}
-.ico{font-size:17px;width:22px;text-align:center}
-.side-note{
-  margin:22px 6px 0;padding:14px;border-radius:16px;
-  background:linear-gradient(135deg,#fff0e7,#f1edff);
-  font-size:11px;color:#687287;line-height:1.6;
-}
-.main{min-width:0;padding:27px clamp(17px,4vw,50px) 55px;max-width:1450px;width:100%;margin:auto}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:24px}
-.eyebrow{color:var(--coral-dark);font-size:11px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase}
-h1{font-size:clamp(26px,3vw,37px);letter-spacing:-1px;margin:7px 0}
-h2{font-size:23px;margin:0 0 8px}
-h3{font-size:16px;margin:0 0 8px}
-p{line-height:1.65;color:#69758a;margin:7px 0}
-.page{display:none;animation:fade .25s ease}
+.app{display:flex;min-height:100vh}
+.sidebar{width:255px;background:var(--navy);color:white;padding:24px 16px;position:fixed;inset:0 auto 0 0;overflow-y:auto;z-index:20}
+.brand{display:flex;align-items:center;gap:11px;margin:0 0 30px;padding:0 8px}
+.logo{width:43px;height:43px;border-radius:15px;background:linear-gradient(135deg,#ffb29b,#a99be9);display:grid;place-items:center;font-size:24px}
+.brand h2{font-size:19px;margin:0}
+.brand small{color:#d6dced;font-size:11px}
+.nav-label{font-size:10px;letter-spacing:1.5px;color:#aeb9d0;margin:22px 10px 9px}
+.nav-btn{display:flex;align-items:center;gap:12px;width:100%;padding:12px 13px;margin:4px 0;border-radius:12px;background:transparent;color:#e8edf7;text-align:left;font-size:13px;transition:.2s}
+.nav-btn:hover,.nav-btn.active{background:#ffffff20;color:white}
+.nav-btn.active{box-shadow:inset 3px 0 #ff9b89}
+.nav-icon{font-size:17px;width:22px;text-align:center}
+.main{margin-left:255px;width:calc(100% - 255px);padding:28px 34px 55px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;gap:15px}
+.topbar h1{font-size:25px;margin:0;color:var(--navy)}
+.topbar p{margin:6px 0 0;color:var(--muted);font-size:13px}
+.date-pill{background:white;border-radius:30px;padding:11px 16px;font-size:12px;box-shadow:var(--shadow)}
+.page{display:none;animation:fade .25s}
 .page.active{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
-.hero{
-  border-radius:26px;padding:30px;
-  background:linear-gradient(115deg,#ffe4d8,#f4eaff 58%,#e8f6ef);
-  display:grid;grid-template-columns:1.5fr .8fr;gap:20px;align-items:center;
-}
-.hero h1{font-size:clamp(29px,4vw,43px);line-height:1.12;max-width:580px}
-.hero p{max-width:600px}
-.hero-art{text-align:center;font-size:95px}
-.btn{
-  padding:11px 16px;border-radius:12px;background:var(--coral);
-  color:white;font-weight:bold;font-size:13px;
-}
-.btn:hover{background:var(--coral-dark)}
-.btn.secondary{background:white;color:#59647a;border:1px solid var(--line)}
-.btn.soft{background:#fff0e9;color:#bd625b}
-.btn.danger{background:#fff0f0;color:#bd5353}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-top:19px}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(120deg,#ffe5d9,#eeeaff 65%,#e2f4eb);border-radius:24px;padding:30px;display:flex;justify-content:space-between;align-items:center;gap:20px;box-shadow:var(--shadow);margin-bottom:22px}
+.hero h2{font-size:27px;margin:0 0 10px;color:var(--navy)}
+.hero p{line-height:1.6;max-width:570px;font-size:14px;margin:0 0 18px}
+.hero-art{font-size:76px;min-width:100px;text-align:center}
+.btn{padding:11px 17px;border-radius:11px;background:var(--coral);color:white;font-weight:bold;font-size:13px;transition:.2s}
+.btn:hover{filter:brightness(.96);transform:translateY(-1px)}
+.btn.secondary{background:var(--navy)}
+.btn.soft{background:var(--lavender);color:var(--navy)}
+.btn.green{background:#55a987}
+.btn.danger{background:#d95f67}
+.btn.small{padding:8px 12px;font-size:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
-.card{
-  background:white;border:1px solid var(--line);
-  border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);
-}
-.tint-peach{background:#fff4ef}
-.tint-lav{background:#f6f2ff}
-.tint-mint{background:#effaf4}
-.tint-yellow{background:#fff9e8}
-.card-icon{
-  width:42px;height:42px;border-radius:14px;
-  display:grid;place-items:center;font-size:21px;
-  background:white;margin-bottom:12px;
-}
-.metric{font-size:30px;font-weight:850;margin:7px 0}
-.muted{color:var(--muted);font-size:12px}
-.section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:27px 0 12px}
-.section-head p{margin:0;font-size:12px}
-.progress{height:9px;background:#f0edf0;border-radius:99px;overflow:hidden}
-.progress span{display:block;height:100%;background:linear-gradient(90deg,#f28a7d,#b5a2f5);border-radius:99px}
-.mood-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
-.mood{
-  background:white;border:1.5px solid var(--line);
-  border-radius:17px;padding:17px 10px;text-align:center;color:var(--ink);
-}
-.mood:hover,.mood.selected{border-color:var(--coral);background:#fff5f1}
-.mood span{display:block;font-size:30px;margin-bottom:7px}
+.card{background:white;padding:21px;border-radius:18px;box-shadow:var(--shadow);margin-bottom:17px}
+.card h3{margin:0 0 9px;color:var(--navy);font-size:16px}
+.card p{font-size:13px;line-height:1.6;color:var(--muted)}
+.stat{font-size:29px;font-weight:bold;color:var(--navy);margin:10px 0}
+.stat-label{font-size:12px;color:var(--muted)}
+.section-title{margin:26px 0 14px;color:var(--navy);font-size:19px}
+.feature{border-radius:18px;padding:20px;min-height:150px}
+.feature .emoji{font-size:29px}
+.feature h3{margin:12px 0 5px;color:var(--navy);font-size:15px}
+.feature p{font-size:12px;line-height:1.5;margin:0 0 12px;color:#68738a}
+.bg-peach{background:var(--peach)}.bg-purple{background:var(--lavender)}.bg-mint{background:var(--mint)}.bg-yellow{background:var(--yellow)}
+.mood-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mood{padding:19px 10px;border:2px solid transparent;border-radius:15px;background:#f7f6fb;text-align:center;color:var(--text);transition:.2s}
+.mood span{display:block;font-size:31px;margin-bottom:8px}
 .mood strong{font-size:13px}
-.form-row{display:grid;gap:7px;margin:13px 0}
-.form-row label{font-size:12px;font-weight:bold;color:#566176}
-input,textarea,select{
-  width:100%;border:1px solid #e7e3e2;background:white;
-  border-radius:12px;padding:12px;color:var(--ink);outline:none;
-}
-textarea{min-height:110px;resize:vertical}
-input:focus,textarea:focus,select:focus{border-color:#e99b91}
-.activity{display:flex;gap:13px;align-items:flex-start}
-.activity-art{
-  width:60px;height:60px;flex:none;border-radius:17px;
-  background:#fff0e9;display:grid;place-items:center;font-size:29px;
-}
-.activity-body{flex:1;min-width:0}
-.tag{font-size:10px;background:#f5f2f0;color:#7c8492;padding:5px 8px;border-radius:99px;font-weight:bold}
-.timer{font-size:23px;font-weight:850;margin:8px 0;color:#c96860}
-.activity-controls{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.activity-controls .btn{padding:8px 10px;font-size:11px}
-.notice{
-  padding:13px 15px;border-radius:13px;background:#fff8e9;
-  color:#806b3f;font-size:12px;line-height:1.6;margin:14px 0;
-}
-.success{background:#edf8f1;color:#47765a}
-.empty{padding:24px;text-align:center;background:#faf8f7;border-radius:15px;color:#8991a0;font-size:13px}
-.journey-step{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
-.step-no{
-  width:32px;height:32px;border-radius:50%;display:grid;
-  place-items:center;background:#fff0e9;color:#c7675f;font-weight:bold;flex:none;
-}
-.step-no.done{background:#e5f5ec;color:#37865b}
-.journey-nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
-.entry{padding:14px 0;border-bottom:1px solid var(--line)}
-.entry:last-child{border:0}
-.bar-row{display:grid;grid-template-columns:90px 1fr 25px;gap:10px;align-items:center;margin:10px 0;font-size:12px}
-.bar{height:9px;border-radius:99px;background:#f1eeee;overflow:hidden}
-.bar span{display:block;height:100%;background:linear-gradient(90deg,#f28a7d,#b5a2f5)}
-.question{padding:15px 0;border-bottom:1px solid var(--line)}
-.question p{font-weight:bold;color:#485368}
-.scale{display:flex;gap:7px;flex-wrap:wrap}
-.scale label{display:flex;gap:5px;align-items:center;background:#faf8f7;border:1px solid var(--line);padding:8px 10px;border-radius:10px;font-size:11px}
-.scale input{width:auto;accent-color:var(--coral)}
-.footer{text-align:center;color:#9aa0ad;font-size:10px;margin-top:38px;line-height:1.7}
-.modal-backdrop{
-  position:fixed;inset:0;background:#25263b88;z-index:30;
-  display:none;align-items:center;justify-content:center;padding:16px;
-}
+.mood.selected{border-color:var(--coral);background:var(--peach)}
+.muted{color:var(--muted);font-size:12px;line-height:1.6}
+.progress-track{height:9px;background:#e9eaf1;border-radius:20px;overflow:hidden;margin:12px 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--coral),var(--purple));width:0%;transition:.3s}
+.journey-head{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.journey-step{font-size:12px;color:var(--muted)}
+.activity{display:flex;align-items:center;gap:15px;padding:16px;border:1px solid #eeeef4;border-radius:15px;margin:10px 0}
+.activity-icon{width:54px;height:54px;border-radius:15px;background:var(--peach);display:grid;place-items:center;font-size:26px;flex-shrink:0}
+.activity-info{flex:1;min-width:0}
+.activity-info h3{margin:0 0 5px;font-size:14px}
+.activity-info p{margin:0;font-size:12px;color:var(--muted);line-height:1.5}
+.activity-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.timer{font-size:34px;font-weight:bold;color:var(--navy);text-align:center;margin:15px}
+input,textarea,select{width:100%;padding:12px;border:1px solid #e0e2eb;border-radius:11px;background:#fff;color:var(--text);outline:none;margin:6px 0 13px}
+input:focus,textarea:focus,select:focus{border-color:var(--purple)}
+textarea{min-height:105px;resize:vertical}
+label{font-size:12px;font-weight:bold;color:var(--navy)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.entry{padding:14px;border-radius:13px;background:#faf9fd;margin:10px 0}
+.entry p{white-space:pre-wrap}
+.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:var(--lavender);font-size:10px;color:var(--navy)}
+.breath-circle{width:175px;height:175px;border-radius:50%;margin:20px auto;background:linear-gradient(135deg,#f7b6a8,#b9b0ec);display:grid;place-items:center;color:white;font-size:20px;font-weight:bold;box-shadow:0 0 0 15px #f3efff;transition:transform 4s ease-in-out}
+.breath-circle.expand{transform:scale(1.2)}
+.question{padding:15px;background:#faf9fd;border-radius:13px;margin:12px 0}
+.question p{font-weight:bold;color:var(--navy);font-size:13px}
+.option{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:12px;font-weight:normal}
+.option input{width:auto;margin:0}
+.notice{padding:14px;border-radius:12px;background:#fff5dc;color:#755d2b;font-size:12px;line-height:1.6;margin:14px 0}
+.success{background:#e8f7ef;color:#347457}
+.modal-backdrop{display:none;position:fixed;inset:0;background:#17223b99;z-index:100;align-items:center;justify-content:center;padding:16px}
 .modal-backdrop.show{display:flex}
-.modal{
-  background:white;border-radius:22px;padding:24px;
-  max-width:570px;width:100%;max-height:88vh;overflow:auto;
+.modal{background:white;border-radius:20px;padding:25px;width:min(560px,100%);max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px #17223b40}
+.modal h2{color:var(--navy);font-size:20px;margin-top:0}
+.modal p{font-size:13px;line-height:1.7;color:#69758a}
+.modal-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.bar-chart{display:flex;align-items:flex-end;gap:10px;height:170px;padding:15px 5px 0;border-bottom:1px solid #ddd}
+.bar-col{flex:1;text-align:center;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.bar{width:70%;max-width:45px;background:linear-gradient(#a89add,#f28c7d);border-radius:7px 7px 0 0;min-height:3px}
+.bar-col small{font-size:10px;color:var(--muted)}
+.empty{text-align:center;padding:25px;color:var(--muted);font-size:13px}
+.mobile-menu{display:none}
+.footer-note{text-align:center;font-size:11px;color:#98a0b0;margin-top:30px;line-height:1.6}
+@media(max-width:900px){.sidebar{width:220px}.main{margin-left:220px;width:calc(100% - 220px);padding:22px}.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){
+ .sidebar{transform:translateX(-100%);transition:.25s;width:260px}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin:0;width:100%;padding:17px}
+ .mobile-menu{display:block;background:white;border-radius:10px;padding:9px 12px;font-size:20px}
+ .topbar{align-items:flex-start}.topbar h1{font-size:21px}.date-pill{display:none}
+ .hero{padding:22px}.hero h2{font-size:22px}.hero-art{font-size:49px;min-width:55px}
+ .grid,.grid.two{grid-template-columns:1fr 1fr;gap:10px}
+ .card{padding:16px}.mood-grid{grid-template-columns:repeat(2,1fr)}
+ .activity{align-items:flex-start;flex-wrap:wrap}.activity-actions{width:100%;justify-content:flex-start}
+ .activity-info{width:calc(100% - 70px)}
 }
-.modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
-.toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  background:#30374b;color:white;padding:12px 18px;border-radius:12px;
-  font-size:12px;z-index:50;display:none;
-}
-.mobile-head{display:none}
-@media(max-width:900px){
-  .app{grid-template-columns:1fr}
-  .sidebar{position:fixed;left:-270px;width:255px;transition:left .25s;box-shadow:var(--shadow)}
-  .sidebar.open{left:0}
-  .mobile-head{display:inline-block}
-  .main{padding:19px 16px 45px}
-  .hero{grid-template-columns:1fr}
-  .hero-art{display:none}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media(max-width:560px){
-  .grid,.grid.two{grid-template-columns:1fr}
-  .mood-grid{grid-template-columns:repeat(2,1fr)}
-  .topbar{align-items:flex-start}
-  .top-actions .pill{display:none}
-  .hero{padding:23px}
-  .card{padding:17px}
-  .activity{gap:9px}
-  .activity-art{width:50px;height:50px;font-size:24px}
-}
+@media(max-width:390px){.grid,.grid.two{grid-template-columns:1fr}.hero-art{display:none}}
 </style>
 </head>
-
 <body>
 <div class="app">
-
 <aside class="sidebar" id="sidebar">
   <div class="brand">
     <div class="logo">🧠</div>
-    <div><strong>Emotion24-7</strong><small>Fahami emosi, jaga kesejahteraan</small></div>
+    <div><h2>Emotion24-7</h2><small>Fahami Emosi, Perkasakan Diri</small></div>
   </div>
-
   <div class="nav-label">MENU UTAMA</div>
-  <nav class="nav" id="nav">
-    <button class="active" data-page="dashboard"><span class="ico">⌂</span>Dashboard</button>
-    <button data-page="mood"><span class="ico">💭</span>Semak Emosi</button>
-    <button data-page="suggest"><span class="ico">✨</span>Cadangan Aktiviti</button>
-    <button data-page="physical"><span class="ico">🏃</span>Aktiviti Fizikal</button>
-    <button data-page="breathing"><span class="ico">🌬️</span>Latihan Pernafasan</button>
-    <button data-page="journal"><span class="ico">📔</span>Jurnal Emosi</button>
-    <button data-page="progress"><span class="ico">📈</span>Perkembangan</button>
-    <button data-page="motivation"><span class="ico">🌟</span>Motivasi Harian</button>
-    <button data-page="challenge"><span class="ico">🏅</span>Cabaran Diri</button>
-    <button data-page="study"><span class="ico">📝</span>Kajian Keberkesanan</button>
-    <button data-page="references"><span class="ico">📚</span>Rujukan</button>
-    <button data-page="feedback"><span class="ico">💬</span>Maklum Balas Umum</button>
-  </nav>
-
-  <div class="side-note">
-    🌱 <strong>Ruang untuk diri sendiri.</strong><br>
-    Gunakan Emotion24-7 mengikut keselesaan anda.
-  </div>
+  <button class="nav-btn active" data-page="dashboard" onclick="go('dashboard')"><span class="nav-icon">🏠</span>Dashboard</button>
+  <button class="nav-btn" data-page="mood" onclick="go('mood')"><span class="nav-icon">💭</span>Semak Emosi</button>
+  <button class="nav-btn" data-page="suggest" onclick="go('suggest')"><span class="nav-icon">✨</span>Cadangan Aktiviti</button>
+  <button class="nav-btn" data-page="physical" onclick="go('physical')"><span class="nav-icon">🏃</span>Aktiviti Fizikal</button>
+  <button class="nav-btn" data-page="breathing" onclick="go('breathing')"><span class="nav-icon">🌬️</span>Latihan Pernafasan</button>
+  <button class="nav-btn" data-page="journal" onclick="go('journal')"><span class="nav-icon">📔</span>Jurnal Emosi</button>
+  <button class="nav-btn" data-page="progress" onclick="go('progress')"><span class="nav-icon">📊</span>Perkembangan</button>
+  <button class="nav-btn" data-page="motivation" onclick="go('motivation')"><span class="nav-icon">🌟</span>Motivasi Harian</button>
+  <button class="nav-btn" data-page="challenge" onclick="go('challenge')"><span class="nav-icon">🎯</span>Cabaran Diri</button>
+  <div class="nav-label">MAKLUMAT</div>
+  <button class="nav-btn" data-page="study" onclick="go('study')"><span class="nav-icon">📝</span>Kajian Keberkesanan</button>
+  <button class="nav-btn" data-page="references" onclick="go('references')"><span class="nav-icon">📚</span>Rujukan</button>
+  <button class="nav-btn" data-page="feedback" onclick="go('feedback')"><span class="nav-icon">💌</span>Maklum Balas Umum</button>
 </aside>
 
 <main class="main">
-  <div class="topbar">
-    <div>
-      <button class="btn secondary mobile-head" id="menuBtn">☰ Menu</button>
-      <div class="eyebrow">Ruang kesejahteraan emosi anda</div>
-    </div>
-    <div class="top-actions">
-      <span class="pill" id="todayLabel"></span>
-      <span class="pill">🌿 Langkah kecil, perubahan positif</span>
-    </div>
+<header class="topbar">
+ <div class="row" style="flex:1">
+  <button class="mobile-menu" onclick="toggleMenu()">☰</button>
+  <div><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Mulakan hari anda dengan memahami emosi diri.</p></div>
+ </div>
+ <div class="date-pill" id="todayLabel"></div>
+</header>
+
+<section class="page active" id="page-dashboard">
+ <div class="hero">
+  <div>
+   <h2>Selamat Datang ke Emotion24-7! 🌈</h2>
+   <p>Kenali emosi, bina kesedaran kendiri dan amalkan aktiviti positif untuk menyokong kesejahteraan diri. Mulakan perjalanan emosi anda hari ini.</p>
+   <button class="btn" onclick="startJourney()">Mulakan Perjalanan Emosi →</button>
   </div>
+  <div class="hero-art">🌤️</div>
+ </div>
+ <div class="grid">
+  <div class="card"><div class="stat" id="dashMood">—</div><div class="stat-label">Emosi terakhir direkodkan</div></div>
+  <div class="card"><div class="stat" id="dashActivity">0</div><div class="stat-label">Aktiviti fizikal diselesaikan</div></div>
+  <div class="card"><div class="stat" id="dashBreath">0</div><div class="stat-label">Sesi pernafasan selesai</div></div>
+ </div>
+ <h2 class="section-title">Terokai Emotion24-7</h2>
+ <div class="grid">
+  <div class="feature bg-peach"><div class="emoji">💭</div><h3>Semak Emosi</h3><p>Kenal pasti emosi yang sedang anda alami.</p><button class="btn small" onclick="go('mood')">Mula</button></div>
+  <div class="feature bg-purple"><div class="emoji">🏃</div><h3>Aktiviti Fizikal</h3><p>Luangkan masa dengan pergerakan ringan.</p><button class="btn small secondary" onclick="go('physical')">Terokai</button></div>
+  <div class="feature bg-mint"><div class="emoji">🌬️</div><h3>Latihan Pernafasan</h3><p>Ambil masa untuk bertenang dan fokus.</p><button class="btn small green" onclick="go('breathing')">Mula</button></div>
+  <div class="feature bg-yellow"><div class="emoji">📔</div><h3>Jurnal Emosi</h3><p>Catat pengalaman dan refleksi harian.</p><button class="btn small secondary" onclick="go('journal')">Tulis</button></div>
+ </div>
+ <div class="card"><h3>Perjalanan Emosi Harian</h3><p>Lengkapkan tujuh langkah secara pilihan untuk membina rutin kesejahteraan diri.</p><div class="progress-track"><div class="progress-fill" id="dashJourneyBar"></div></div><small class="muted" id="dashJourneyText">0 daripada 7 langkah selesai hari ini.</small></div>
+</section>
 
-  <!-- DASHBOARD -->
-  <section class="page active" id="page-dashboard">
-    <div class="hero">
-      <div>
-        <div class="eyebrow">Selamat datang ke Emotion24-7</div>
-        <h1>Kenali emosi. Fahami diri. Mulakan langkah positif.</h1>
-        <p>
-          Luangkan sedikit masa untuk memahami perasaan, mencuba aktiviti
-          yang sesuai dan membina rutin kesejahteraan diri.
-        </p>
-        <div class="actions">
-          <button class="btn" onclick="go('mood')">Semak emosi sekarang →</button>
-          <button class="btn secondary" onclick="go('journey')">Mulakan Emotion Journey</button>
-        </div>
-      </div>
-      <div class="hero-art">🌈💗</div>
-    </div>
+<section class="page" id="page-mood">
+ <div class="card">
+  <h3>Bagaimanakah perasaan anda sekarang?</h3>
+  <p>Pilih emosi yang paling hampir dengan perasaan anda pada masa ini. Tiada jawapan betul atau salah.</p>
+  <div class="mood-grid" id="moodChoices"></div>
+  <label>Catatan tambahan (pilihan)</label>
+  <textarea id="moodNote" placeholder="Apakah perkara yang mungkin mempengaruhi emosi anda hari ini?"></textarea>
+  <button class="btn" onclick="saveMood()">Simpan Rekod Emosi</button>
+ </div>
+ <div class="card"><h3>Rekod Emosi Terkini</h3><div id="moodHistory"></div></div>
+</section>
 
-    <div class="grid">
-      <div class="card tint-peach">
-        <div class="card-icon">💭</div>
-        <div class="muted">Rekod emosi</div>
-        <div class="metric" id="dashMoods">0</div>
-        <p>Jumlah semakan emosi anda</p>
-      </div>
-      <div class="card tint-lav">
-        <div class="card-icon">🏃</div>
-        <div class="muted">Aktiviti fizikal selesai</div>
-        <div class="metric" id="dashActivities">0</div>
-        <p>Aktiviti yang ditandakan selesai</p>
-      </div>
-      <div class="card tint-mint">
-        <div class="card-icon">🌬️</div>
-        <div class="muted">Latihan pernafasan</div>
-        <div class="metric" id="dashBreaths">0</div>
-        <p>Sesi yang telah dilengkapkan</p>
-      </div>
-    </div>
+<section class="page" id="page-suggest">
+ <div class="card"><h3>Cadangan Aktiviti Berdasarkan Emosi</h3><p>Pilih emosi untuk melihat cadangan aktiviti yang boleh dicuba.</p><div class="mood-grid" id="suggestMoods"></div><div id="suggestResult" class="notice">Pilih emosi untuk melihat cadangan.</div></div>
+</section>
 
-    <div class="section-head">
-      <div><h2>Daily Emotion Journey</h2><p>Perjalanan ringkas untuk mengenali emosi.</p></div>
-      <button class="btn soft" onclick="go('journey')">Lihat perjalanan</button>
-    </div>
-    <div class="card" id="journeyPreview"></div>
+<section class="page" id="page-physical">
+ <div class="hero"><div><h2>Gerakkan Tubuh, Segarkan Minda! 🏃</h2><p>Senaman ringan boleh menjadi salah satu cara untuk menyokong kesejahteraan diri. Pilih aktiviti mengikut keselesaan anda.</p></div><div class="hero-art">💪</div></div>
+ <div class="notice">Lakukan aktiviti mengikut kemampuan diri. Pastikan ruang selamat dan selesa. Berhenti jika mengalami kesakitan, pening atau ketidakselesaan.</div>
+ <div class="card"><div class="row"><div><h3>Senarai Aktiviti Fizikal</h3><p>Jumlah anggaran masa: 23 minit.</p></div><div style="text-align:right"><span class="tag" id="activityCount">0/8 selesai hari ini</span></div></div><div id="activityList"></div></div>
+</section>
 
-    <div class="grid two">
-      <div class="card"><h3>🌼 Ingat hari ini</h3><p>Emosi yang anda alami adalah sebahagian daripada pengalaman manusia. Berikan ruang kepada diri untuk mengenalinya tanpa menghukum diri sendiri.</p></div>
-      <div class="card"><h3>🔒 Privasi anda</h3><p>Rekod disimpan dalam pelayar pada peranti ini sahaja. Maklumat tidak dihantar secara automatik ke pelayan.</p></div>
-    </div>
-  </section>
-
-  <!-- SEMAK EMOSI -->
-  <section class="page" id="page-mood">
-    <div class="eyebrow">Emotion check-in</div>
-    <h1>Bagaimana perasaan anda sekarang?</h1>
-    <p>Pilih emosi yang paling hampir dengan perasaan anda ketika ini.</p>
-    <div class="mood-grid" id="moodGrid"></div>
-    <div class="card">
-      <div class="form-row">
-        <label for="moodNote">Nota ringkas (pilihan)</label>
-        <textarea id="moodNote" placeholder="Apakah perkara yang mungkin mempengaruhi emosi anda hari ini?"></textarea>
-      </div>
-      <button class="btn" id="saveMoodBtn">Simpan semakan emosi</button>
-    </div>
-    <div class="notice">Semakan ini bertujuan membantu refleksi kendiri dan bukan alat diagnosis atau pengganti bantuan profesional.</div>
-  </section>
-
-  <!-- CADANGAN -->
-  <section class="page" id="page-suggest">
-    <div class="eyebrow">Cadangan mengikut emosi</div>
-    <h1>Cadangan aktiviti</h1>
-    <p>Pilih aktiviti mengikut keselesaan dan kemampuan anda.</p>
-    <div class="card" id="recommendation"></div>
-  </section>
-
-  <!-- AKTIVITI FIZIKAL -->
-  <section class="page" id="page-physical">
-    <div class="eyebrow">Gerakkan tubuh, segarkan minda</div>
-    <h1>Aktiviti fizikal</h1>
-    <p>Pilih aktiviti mengikut kemampuan. Setiap pemasa dikendalikan secara berasingan.</p>
-    <div class="notice">Lakukan pergerakan secara terkawal. Hentikan aktiviti jika berasa sakit, pening atau tidak selesa.</div>
-    <div class="grid two" id="activityList"></div>
-  </section>
-
-  <!-- PERNAFASAN -->
-  <section class="page" id="page-breathing">
-    <div class="eyebrow">Tenangkan rentak diri</div>
-    <h1>Latihan pernafasan</h1>
-    <p>Tarik nafas selama 4 saat dan hembus selama 6 saat. Ulang secara selesa selama 2 minit.</p>
-    <div class="card tint-lav" style="text-align:center;padding:30px">
-      <div id="breathOrb" style="width:170px;height:170px;border-radius:50%;margin:10px auto 18px;background:radial-gradient(circle at 35% 30%,#fff,#d9ceff 60%,#b8a5ee);display:grid;place-items:center;transition:transform 1s">
-        <span id="breathInstruction" style="font-weight:bold;color:#61547f">Bersedia?</span>
-      </div>
-      <div class="timer" id="breathTimer">02:00</div>
-      <div class="muted" id="breathStatus">Tekan mula apabila anda bersedia.</div>
-      <div class="actions" style="justify-content:center">
-        <button class="btn" id="breathStart">Mula</button>
-        <button class="btn secondary" id="breathPause" disabled>Jeda / Sambung</button>
-        <button class="btn secondary" id="breathReset">Mula semula</button>
-      </div>
-    </div>
-    <div class="notice">Jangan tahan nafas. Bernafas seperti biasa jika corak ini tidak selesa. Hentikan latihan jika pening atau tidak selesa.</div>
-  </section>
-
-  <!-- JURNAL -->
-  <section class="page" id="page-journal">
-    <div class="eyebrow">Refleksi kendiri</div>
-    <h1>Jurnal emosi</h1>
-    <p>Catat fikiran atau pengalaman anda. Penulisan adalah pilihan.</p>
-    <div class="card">
-      <div class="form-row">
-        <label for="journalMood">Emosi (pilihan)</label>
-        <select id="journalMood">
-          <option value="">Tidak mahu pilih</option>
-          <option>Gembira</option><option>Sedih</option><option>Marah</option>
-          <option>Takut</option><option>Tenang</option><option>Tertekan</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label for="journalText">Catatan</label>
-        <textarea id="journalText" placeholder="Apa yang bermain di fikiran anda hari ini?"></textarea>
-      </div>
-      <div class="actions">
-        <button class="btn" id="saveJournal">Simpan catatan</button>
-        <button class="btn secondary" id="cancelEdit" style="display:none">Batal suntingan</button>
-      </div>
-    </div>
-    <div class="section-head"><div><h2>Catatan terdahulu</h2><p>Catatan disimpan pada peranti ini.</p></div></div>
-    <div class="card" id="journalEntries"></div>
-  </section>
-
-  <!-- PERKEMBANGAN -->
-  <section class="page" id="page-progress">
-    <div class="eyebrow">Lihat perkembangan anda</div>
-    <h1>Perkembangan</h1>
-    <p>Ringkasan berdasarkan rekod yang anda simpan pada peranti ini.</p>
-    <div class="grid">
-      <div class="card"><div class="muted">Semakan emosi</div><div class="metric" id="statMood">0</div></div>
-      <div class="card"><div class="muted">Aktiviti fizikal selesai</div><div class="metric" id="statActivity">0</div></div>
-      <div class="card"><div class="muted">Sesi pernafasan selesai</div><div class="metric" id="statBreath">0</div></div>
-      <div class="card"><div class="muted">Catatan jurnal</div><div class="metric" id="statJournal">0</div></div>
-      <div class="card"><div class="muted">Hari penggunaan direkodkan</div><div class="metric" id="statDays">0</div></div>
-    </div>
-    <div class="section-head"><div><h2>Corak emosi</h2><p>Bilangan rekod mengikut emosi.</p></div></div>
-    <div class="card" id="moodChart"></div>
-    <div class="section-head"><div><h2>Pengurusan data</h2><p>Eksport atau padam data pada peranti ini.</p></div></div>
-    <div class="card">
-      <p>Eksport peribadi mengandungi rekod emosi, aktiviti, pernafasan dan jurnal. Fail ini berasingan daripada data kajian.</p>
-      <div class="actions">
-        <button class="btn" id="exportPersonal">Eksport data peribadi (CSV)</button>
-        <button class="btn danger" id="deleteData">Padam semua data peranti ini</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- MOTIVASI -->
-  <section class="page" id="page-motivation">
-    <div class="eyebrow">Suntikan semangat</div>
-    <h1>Motivasi harian</h1>
-    <p>Ambil satu mesej sebagai peringatan kecil untuk hari ini.</p>
-    <div class="card tint-yellow" style="text-align:center;padding:38px">
-      <div style="font-size:48px">🌻</div>
-      <h2 id="motivationText" style="max-width:650px;margin:15px auto">Setiap langkah kecil tetap membawa anda ke hadapan.</h2>
-      <div class="muted" id="motivationDate"></div>
-      <div class="actions" style="justify-content:center">
-        <button class="btn soft" id="newMotivation">Lihat mesej lain</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- CABARAN -->
-  <section class="page" id="page-challenge">
-    <div class="eyebrow">Konsisten mengikut kemampuan</div>
-    <h1>Cabaran diri</h1>
-    <p>Pilih cabaran untuk membina rutin positif. Cabaran ini adalah pilihan.</p>
-    <div class="grid" id="challengeCards"></div>
-    <div class="notice">Hari hanya dikira selesai apabila anda sendiri menekan butang “Tandakan hari ini selesai”.</div>
-  </section>
-
-  <!-- KAJIAN -->
-  <section class="page" id="page-study">
-    <div class="eyebrow">Penyertaan secara sukarela</div>
-    <h1>Kajian keberkesanan Emotion24-7</h1>
-    <div class="card">
-      <h3>Maklumat kajian</h3>
-      <p>Kajian ini bertujuan menilai perubahan kesejahteraan emosi dan kebolehgunaan website Emotion24-7 selepas tempoh penggunaan selama 14 hari.</p>
-      <ul style="color:#69758a;line-height:1.9;font-size:12px">
-        <li>Penyertaan terbuka kepada individu berumur 18 tahun ke atas sahaja.</li>
-        <li>Penyertaan adalah sukarela.</li>
-        <li>Tempoh kajian ialah 14 hari selepas pre-test dihantar.</li>
-        <li>Soal selidik menggunakan skala 1 hingga 5.</li>
-        <li>Data disimpan pada pelayar/peranti ini dan tidak dihantar secara automatik.</li>
-        <li>Gunakan kod peserta ciptaan sendiri. Jangan masukkan nama atau nombor pengenalan.</li>
-      </ul>
-      <div class="notice">
-        Soal selidik ini dibangunkan khusus untuk penilaian projek dan bukan instrumen klinikal yang telah disahkan. Semakan pakar dan keperluan etika institusi perlu dipenuhi sebelum kajian sebenar dijalankan.
-      </div>
-      <div class="actions">
-        <button class="btn" id="joinStudy">Sertai kajian</button>
-        <button class="btn secondary" id="studyStatusBtn">Lihat status kajian</button>
-      </div>
-    </div>
-    <div class="card" id="studyPanel" style="margin-top:16px">
-      <div class="empty">Anda belum menyertai kajian. Website masih boleh digunakan seperti biasa.</div>
-    </div>
-  </section>
-
-  <!-- RUJUKAN -->
-  <section class="page" id="page-references">
-    <div class="eyebrow">Bacaan dan panduan</div>
-    <h1>Rujukan</h1>
-    <p>Bahagian ini menyediakan panduan umum berkaitan kesejahteraan emosi dan aktiviti fizikal.</p>
-    <div class="grid two">
-      <div class="card"><div class="card-icon">🧠</div><h3>Kesedaran emosi</h3><p>Mengenal pasti dan menamakan emosi boleh membantu seseorang memahami pengalaman diri serta memilih tindak balas yang lebih sesuai.</p></div>
-      <div class="card"><div class="card-icon">🚶</div><h3>Aktiviti fizikal</h3><p>Aktiviti fizikal yang sesuai dengan kemampuan boleh menyokong kesihatan fizikal dan kesejahteraan umum.</p></div>
-      <div class="card"><div class="card-icon">🌬️</div><h3>Pernafasan terkawal</h3><p>Pernafasan perlahan dan selesa boleh digunakan sebagai latihan ringkas untuk memberi tumpuan kepada keadaan semasa.</p></div>
-      <div class="card"><div class="card-icon">📔</div><h3>Penulisan reflektif</h3><p>Jurnal boleh menjadi ruang untuk menyusun fikiran, mengenal pasti pengalaman dan membuat refleksi kendiri.</p></div>
-    </div>
-    <div class="notice">Kandungan Emotion24-7 ialah bahan pendidikan dan sokongan kendiri. Ia tidak menggantikan nasihat profesional kesihatan.</div>
-  </section>
-
-  <!-- MAKLUM BALAS UMUM -->
-  <section class="page" id="page-feedback">
-    <div class="eyebrow">Kami menghargai pandangan anda</div>
-    <h1>Maklum balas umum</h1>
-    <p>Kongsikan pandangan tentang pengalaman menggunakan Emotion24-7. Bahagian ini berasingan daripada soal selidik kajian.</p>
-    <div class="card">
-      <div class="form-row">
-        <label for="generalFeedback">Maklum balas anda</label>
-        <textarea id="generalFeedback" placeholder="Apakah yang anda suka atau ingin kami perbaiki?"></textarea>
-      </div>
-      <button class="btn" id="saveGeneralFeedback">Simpan maklum balas pada peranti ini</button>
-      <div class="muted" id="feedbackSaved" style="margin-top:10px"></div>
-    </div>
-  </section>
-
-  <!-- EMOTION JOURNEY -->
-  <section class="page" id="page-journey">
-    <div class="eyebrow">Daily Emotion Journey</div>
-    <h1>Perjalanan emosi harian</h1>
-    <p>Ikuti langkah ini mengikut keselesaan. Anda boleh keluar pada bila-bila masa.</p>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;gap:10px">
-        <strong id="journeyTitle">Langkah 1 daripada 7</strong>
-        <span class="muted" id="journeyPct">14%</span>
-      </div>
-      <div class="progress" style="margin:12px 0 18px"><span id="journeyBar" style="width:14%"></span></div>
-      <div id="journeyContent"></div>
-      <div class="journey-nav">
-        <button class="btn secondary" id="journeyBack">← Kembali</button>
-        <button class="btn" id="journeyNext">Seterusnya →</button>
-      </div>
-    </div>
-  </section>
-
-  <div class="footer">
-    Emotion24-7 · Fahami Emosi, Perkasakan Kesejahteraan Diri<br>
-    Maklumat disimpan secara setempat pada peranti ini.
+<section class="page" id="page-breathing">
+ <div class="card" style="text-align:center">
+  <h3>Latihan Pernafasan 4–6</h3>
+  <p>Tarik nafas secara perlahan selama 4 saat dan hembus nafas selama 6 saat. Ulang secara selesa selama 2 minit.</p>
+  <div class="breath-circle" id="breathCircle"><span id="breathInstruction">Bersedia</span></div>
+  <div class="timer" id="breathTimer">02:00</div>
+  <div class="row" style="max-width:420px;margin:auto">
+   <button class="btn" id="breathStart" onclick="startBreathing()">Mula</button>
+   <button class="btn soft" onclick="pauseBreathing()">Jeda</button>
+   <button class="btn secondary" onclick="resetBreathing()">Mula Semula</button>
   </div>
+  <p class="muted">Tidak perlu menahan nafas. Bernafas mengikut keselesaan sendiri dan berhenti jika berasa pening atau tidak selesa.</p>
+ </div>
+</section>
+
+<section class="page" id="page-journal">
+ <div class="card">
+  <h3>Jurnal Emosi Saya 📔</h3><p>Luangkan masa untuk menulis perkara yang anda fikirkan atau rasakan. Catatan ini disimpan dalam pelayar pada peranti anda.</p>
+  <input type="hidden" id="journalEditId">
+  <label>Emosi (pilihan)</label><select id="journalMood"><option value="">Tidak dinyatakan</option><option>Gembira</option><option>Sedih</option><option>Marah</option><option>Takut</option><option>Tenang</option><option>Tertekan</option></select>
+  <label>Catatan jurnal</label><textarea id="journalText" placeholder="Tulis refleksi atau pengalaman anda di sini..."></textarea>
+  <button class="btn" onclick="saveJournal()">Simpan Catatan</button> <button class="btn soft" onclick="clearJournalForm()">Kosongkan</button>
+ </div>
+ <div class="card"><h3>Catatan Terdahulu</h3><div id="journalEntries"></div></div>
+</section>
+
+<section class="page" id="page-progress">
+ <h2 class="section-title">Ringkasan Perkembangan Anda</h2>
+ <div class="grid">
+  <div class="card"><div class="stat" id="pMood">0</div><div class="stat-label">Rekod emosi</div></div>
+  <div class="card"><div class="stat" id="pActivity">0</div><div class="stat-label">Aktiviti fizikal selesai</div></div>
+  <div class="card"><div class="stat" id="pBreath">0</div><div class="stat-label">Sesi pernafasan selesai</div></div>
+  <div class="card"><div class="stat" id="pJournal">0</div><div class="stat-label">Catatan jurnal</div></div>
+  <div class="card"><div class="stat" id="pDays">0</div><div class="stat-label">Hari penggunaan direkodkan</div></div>
+  <div class="card"><div class="stat" id="pChallenge">0</div><div class="stat-label">Hari cabaran diselesaikan</div></div>
+ </div>
+ <div class="card"><h3>Rekod Emosi</h3><div class="bar-chart" id="emotionChart"></div><div class="muted" style="margin-top:10px">Carta menunjukkan bilangan rekod bagi setiap emosi berdasarkan data yang disimpan.</div></div>
+ <div class="card"><h3>Pengurusan Data</h3><p>Data peribadi anda disimpan secara setempat dalam browser ini.</p><button class="btn" onclick="exportPersonalCSV()">Eksport Data Peribadi (CSV)</button> <button class="btn danger" onclick="deleteAllData()">Padam Semua Data</button></div>
+</section>
+
+<section class="page" id="page-motivation">
+ <div class="hero"><div><h2>Inspirasi Hari Ini ✨</h2><p>Setiap hari memberikan peluang baharu untuk mengenali diri dan membina langkah yang lebih positif.</p></div><div class="hero-art">🌻</div></div>
+ <div class="card" style="text-align:center;padding:38px">
+  <div style="font-size:48px">💛</div><h2 id="dailyQuote" style="font-size:22px;line-height:1.6;color:var(--navy)"></h2><p id="quoteAuthor" class="muted"></p>
+  <button class="btn soft" onclick="newQuote()">Kata-kata Motivasi Lain</button>
+ </div>
+</section>
+
+<section class="page" id="page-challenge">
+ <div class="hero"><div><h2>Cabaran Diri 🎯</h2><p>Bina rutin positif melalui cabaran kecil yang boleh dilakukan mengikut kemampuan dan kesesuaian anda.</p></div><div class="hero-art">🏆</div></div>
+ <div class="grid">
+  <div class="feature bg-peach"><div class="emoji">🌱</div><h3>Cabaran 3 Hari</h3><p>Mulakan dengan langkah kecil.</p><button class="btn small" onclick="startChallenge(3)">Pilih Cabaran</button></div>
+  <div class="feature bg-purple"><div class="emoji">🌼</div><h3>Cabaran 5 Hari</h3><p>Bina rutin secara berperingkat.</p><button class="btn small secondary" onclick="startChallenge(5)">Pilih Cabaran</button></div>
+  <div class="feature bg-mint"><div class="emoji">🌳</div><h3>Cabaran 7 Hari</h3><p>Kekalkan amalan positif sepanjang minggu.</p><button class="btn small green" onclick="startChallenge(7)">Pilih Cabaran</button></div>
+ </div>
+ <div class="card"><h3>Cabaran Semasa</h3><div id="challengeDisplay"></div></div>
+</section>
+
+<section class="page" id="page-study">
+ <div class="hero"><div><h2>Kajian Keberkesanan Emotion24-7 📝</h2><p>Ruang penyertaan kajian untuk menilai perubahan kesejahteraan emosi dan kebolehgunaan website Emotion24-7.</p></div><div class="hero-art">📋</div></div>
+ <div class="notice">Penyertaan kajian ini hanya untuk individu berumur 18 tahun ke atas. Pengguna bawah 18 tahun masih boleh menggunakan fungsi website biasa, tetapi tidak boleh menyertai kajian.</div>
+ <div class="card"><h3>Maklumat Kajian</h3><p>Tempoh kajian ialah 14 hari. Peserta akan menjawab soal selidik sebelum dan selepas menggunakan website. Maklum balas turut dikumpulkan bagi menilai pengalaman penggunaan.</p><p>Penyertaan adalah secara sukarela. Data kajian disimpan dalam pelayar pada peranti ini dan tidak dihantar secara automatik kepada mana-mana pihak.</p><button class="btn" onclick="openStudyInfo()">Baca Maklumat & Sertai Kajian</button></div>
+ <div class="card"><h3>Status Penyertaan</h3><div id="studyStatus"></div></div>
+ <div class="card"><h3>Eksport Data Kajian</h3><p>Eksport data kajian tanpa nama menggunakan kod peserta. Fail ini berasingan daripada eksport data peribadi.</p><button class="btn secondary" onclick="exportStudyCSV()">Eksport Data Kajian (CSV)</button></div>
+</section>
+
+<section class="page" id="page-references">
+ <div class="card"><h3>Rujukan dan Maklumat</h3>
+ <p>Emotion24-7 ialah platform sokongan pendidikan dan kesedaran kendiri berkaitan kesejahteraan emosi. Kandungannya bertujuan membantu pengguna mengenali emosi serta meneroka aktiviti positif.</p>
+ <h3>Skop Penggunaan</h3><p>Website ini bukan alat diagnosis, rawatan atau pengganti nasihat profesional. Pengguna yang memerlukan bantuan berkaitan kesejahteraan emosi boleh mendapatkan sokongan daripada individu yang dipercayai atau profesional yang berkelayakan.</p>
+ <h3>Privasi dan Penyimpanan Data</h3><p>Data disimpan menggunakan storan setempat browser (localStorage) pada peranti yang digunakan. Data tidak disegerakkan ke peranti lain dan tidak dihantar secara automatik ke pelayan. Pengguna boleh mengeksport atau memadam data melalui menu Perkembangan.</p>
+ <h3>Maklumat Soal Selidik</h3><p>Soal selidik kajian Emotion24-7 ialah instrumen yang dibangunkan untuk tujuan penilaian projek ini. Ia bukan instrumen klinikal atau alat diagnosis dan perlu melalui semakan pakar serta kajian rintis sebelum digunakan dalam kajian sebenar.</p>
+ </div>
+</section>
+
+<section class="page" id="page-feedback">
+ <div class="card"><h3>Maklum Balas Umum 💌</h3><p>Kongsikan pandangan anda tentang website Emotion24-7. Maklum balas ini disimpan secara setempat pada peranti anda.</p>
+ <label>Penilaian keseluruhan</label><select id="generalRating"><option value="">Pilih penilaian</option><option>Sangat Baik</option><option>Baik</option><option>Sederhana</option><option>Kurang Memuaskan</option></select>
+ <label>Cadangan atau komen</label><textarea id="generalComment" placeholder="Kongsikan pandangan atau cadangan penambahbaikan..."></textarea>
+ <button class="btn" onclick="saveGeneralFeedback()">Hantar Maklum Balas</button>
+ </div><div class="card"><h3>Maklum Balas Terdahulu</h3><div id="generalFeedbackList"></div></div>
+</section>
+
+<section class="page" id="page-journey">
+ <div class="card">
+  <div class="journey-head"><div><h3>Daily Emotion Journey</h3><p>Perjalanan kesejahteraan emosi harian anda.</p></div><div class="journey-step" id="journeyStepText">Langkah 1/7</div></div>
+  <div class="progress-track"><div class="progress-fill" id="journeyBar"></div></div>
+  <div id="journeyContent"></div>
+  <div class="row" style="margin-top:22px"><button class="btn soft" id="journeyBack" onclick="journeyMove(-1)">← Kembali</button><button class="btn" id="journeyNext" onclick="journeyMove(1)">Seterusnya →</button></div>
+  <p class="muted">Anda boleh keluar daripada perjalanan ini pada bila-bila masa dan menggunakan menu lain.</p>
+ </div>
+</section>
+
+<div class="footer-note">Emotion24-7 · Fahami Emosi, Perkasakan Kesejahteraan Diri<br>Platform kesedaran kendiri dan kesejahteraan emosi.</div>
 </main>
 </div>
 
-<div class="modal-backdrop" id="modal">
-  <div class="modal">
-    <div id="modalContent"></div>
-    <div class="modal-actions" id="modalActions"></div>
-  </div>
+<div class="modal-backdrop" id="modalBackdrop">
+ <div class="modal" id="modalContent"></div>
 </div>
-<div class="toast" id="toast"></div>
 
 <script>
-/* =========================
-   1. DATA DAN TETAPAN ASAS
-========================= */
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
-const STORAGE_KEY = "emotion247_final_v1";
-
-const moods = [
-  {name:"Gembira",emoji:"😊",desc:"Kekalkan rutin positif dan hargai perkara yang menggembirakan."},
-  {name:"Sedih",emoji:"🌧️",desc:"Cuba jalan santai atau tulis perkara yang sedang dirasai."},
-  {name:"Marah",emoji:"😠",desc:"Ambil ruang seketika dan cuba pernafasan perlahan atau regangan ringan."},
-  {name:"Takut",emoji:"😟",desc:"Cuba pernafasan perlahan dan refleksi tentang perkara yang membuat anda berasa takut."},
-  {name:"Tenang",emoji:"😌",desc:"Kekalkan keadaan positif dengan aktiviti ringan dan kesedaran kendiri."},
-  {name:"Tertekan",emoji:"😣",desc:"Pilih senaman ringan atau latihan pernafasan mengikut keselesaan."}
-];
-
-const activities = [
-  ["Regangan Bahu","2 min","🙆","Berdiri atau duduk dengan selesa. Angkat bahu perlahan, kemudian lepaskan."],
-  ["Regangan Tangan","2 min","🤸","Luruskan satu tangan ke hadapan dan regangkan secara lembut. Tukar tangan."],
-  ["Berjalan Setempat","3 min","🚶","Berjalan setempat pada kadar yang selesa. Ayunkan tangan secara semula jadi."],
-  ["Langkah ke Sisi","3 min","↔️","Langkah ke kanan dan kiri secara perlahan. Pastikan ruang sekeliling selamat."],
-  ["Jalan Santai","5 min","🌳","Berjalan pada kadar santai di kawasan yang rata dan selamat."],
-  ["Tekan Tubi Dinding","3 min","🧱","Letakkan tapak tangan pada dinding. Bengkokkan siku sedikit dan tolak semula."],
-  ["Mini Squat","3 min","🧍","Dengan sokongan yang stabil jika perlu, bengkokkan lutut sedikit dan kembali tegak."],
-  ["Putaran Badan","2 min","🔄","Duduk atau berdiri dengan stabil. Putar bahagian atas badan sedikit ke kiri dan kanan."]
-];
-
-const journeySteps = [
-  "Semak Emosi","Cadangan Aktiviti","Aktiviti Fizikal",
-  "Latihan Pernafasan","Jurnal Emosi","Analisis & Perkembangan",
-  "Motivasi Harian"
-];
-
-const preQuestions = [
-  "Saya dapat mengenal pasti emosi yang sedang saya alami.",
-  "Saya memahami perkara yang boleh mempengaruhi emosi saya.",
-  "Saya mengetahui cara yang sesuai untuk mengurus emosi saya.",
-  "Saya mengamalkan aktiviti yang membantu kesejahteraan diri.",
-  "Saya yakin untuk mengambil langkah positif apabila berhadapan dengan tekanan."
-];
-
-const feedbackQuestions = [
-  "Website Emotion24-7 mudah digunakan.",
-  "Susunan menu dan navigasi mudah difahami.",
-  "Maklumat yang disediakan mudah difahami.",
-  "Aktiviti yang dicadangkan sesuai untuk dilakukan.",
-  "Reka bentuk website menarik dan selesa digunakan.",
-  "Saya berpuas hati dengan pengalaman menggunakan website."
-];
-
-const scaleLabels = [
-  "Sangat Tidak Setuju","Tidak Setuju","Tidak Pasti","Setuju","Sangat Setuju"
-];
-
-const motivations = [
-  "Setiap langkah kecil tetap membawa anda ke hadapan.",
-  "Anda tidak perlu menyelesaikan semuanya dalam satu masa.",
-  "Memberi ruang kepada diri sendiri juga satu bentuk kemajuan.",
-  "Hari yang mencabar tidak menentukan keseluruhan perjalanan anda.",
-  "Konsisten bukan bermaksud sempurna; teruskan mengikut kemampuan.",
-  "Kenali apa yang anda rasa, kemudian pilih langkah yang baik untuk diri.",
-  "Rehat apabila perlu. Kesejahteraan diri juga satu keutamaan."
-];
-
-function defaultData(){
-  return {
-    moods:[],activities:[],breaths:[],journals:[],
-    challenge:{},study:null,generalFeedback:[],usedDays:[]
-  };
-}
-
-function loadData(){
-  try{
-    return {...defaultData(),...JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")};
-  }catch(e){
-    return defaultData();
-  }
-}
-
-let data = loadData();
-let selectedMood = "";
-let editingJournal = null;
-let journeyIndex = 0;
-let journeyMoodSaved = false;
-let activityTimers = {};
-
-function save(){
-  try{
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
-  }catch(e){
-    toast("Ruang simpanan pelayar tidak mencukupi.");
-  }
-  renderDashboard();
-  renderProgress();
-  renderJournal();
-  renderStudyPanel();
-  renderChallenges();
-}
-
-function today(){
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-}
-
-function dateText(v){
-  return new Date(v+"T12:00:00").toLocaleDateString("ms-MY",{
-    day:"numeric",month:"short",year:"numeric"
-  });
-}
-
-function markUsed(){
-  if(!data.usedDays.includes(today())){
-    data.usedDays.push(today());
-    save();
-  }
-}
-
-function toast(message){
-  const el = $("#toast");
-  el.textContent = message;
-  el.style.display = "block";
-  clearTimeout(toast.timeout);
-  toast.timeout = setTimeout(()=>el.style.display="none",2600);
-}
-
-function escapeHtml(value){
-  return String(value).replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
-}
-
-/* =========================
-   2. NAVIGASI WEBSITE
-========================= */
+const KEY="emotion247_data_v1";
+const defaults={
+ moods:[],activities:[],breaths:[],journals:[],challenge:null,challengeDays:[],
+ study:null,feedback:[],journeyDate:"",journeyDone:[],lastVisit:"",generalFeedback:[]
+};
+let data=loadData();
+function loadData(){try{return {...defaults,...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(e){return {...defaults}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function today(){let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function formatDate(s){if(!s)return "";let a=s.slice(0,10).split("-");return a.length===3?`${a[2]}/${a[1]}/${a[0]}`:s}
+function nowStamp(){return new Date().toLocaleString("ms-MY")}
+function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function markVisit(){if(data.lastVisit!==today()){data.lastVisit=today();save()}}
+const moods=[["Gembira","😄"],["Sedih","😢"],["Marah","😠"],["Takut","😨"],["Tenang","😌"],["Tertekan","😣"]];
+const advice={
+"Gembira":"Kekalkan rutin positif. Anda boleh meneruskan aktiviti yang memberi kepuasan dan berkongsi kegembiraan dengan orang sekeliling.",
+"Sedih":"Cuba berjalan santai, menulis jurnal atau berbual dengan individu yang dipercayai. Berikan ruang kepada diri sendiri.",
+"Marah":"Ambil masa untuk bertenang. Cuba latihan pernafasan perlahan atau regangan ringan sebelum bertindak balas.",
+"Takut":"Cuba pernafasan perlahan dan refleksi kendiri. Kenal pasti perkara yang membuatkan anda berasa takut secara berperingkat.",
+"Tenang":"Kekalkan keadaan positif melalui aktiviti ringan, kesedaran kendiri dan rutin harian yang seimbang.",
+"Tertekan":"Cuba senaman ringan, latihan pernafasan atau berehat seketika. Bahagikan tugasan kepada langkah yang lebih kecil."
+};
 function go(page){
-  $$(".page").forEach(p=>p.classList.remove("active"));
-  const target = $("#page-"+page);
-  if(target) target.classList.add("active");
-
-  $$("#nav button").forEach(b=>{
-    b.classList.toggle("active",b.dataset.page===page);
-  });
-
-  $("#sidebar").classList.remove("open");
-
-  if(page==="suggest") renderRecommendation();
-  if(page==="physical") renderActivities();
-  if(page==="journey") renderJourney();
-  if(page==="study") renderStudyPanel();
-  if(page==="challenge") renderChallenges();
-
-  window.scrollTo({top:0,behavior:"smooth"});
-  markUsed();
+ pauseBreathing();
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ let target=document.getElementById("page-"+page);
+ if(!target)return;
+ target.classList.add("active");
+ document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+ let names={dashboard:"Dashboard",mood:"Semak Emosi",suggest:"Cadangan Aktiviti",physical:"Aktiviti Fizikal",breathing:"Latihan Pernafasan",journal:"Jurnal Emosi",progress:"Perkembangan",motivation:"Motivasi Harian",challenge:"Cabaran Diri",study:"Kajian Keberkesanan",references:"Rujukan",feedback:"Maklum Balas Umum",journey:"Daily Emotion Journey"};
+ document.getElementById("pageTitle").textContent=names[page]||"Emotion24-7";
+ document.getElementById("pageSubtitle").textContent=page==="dashboard"?"Mulakan hari anda dengan memahami emosi diri.":"Terokai fungsi "+(names[page]||page)+".";
+ document.getElementById("sidebar").classList.remove("open");
+ renderAll();
 }
-
-$$("#nav button").forEach(button=>{
-  button.addEventListener("click",()=>go(button.dataset.page));
-});
-
-$("#menuBtn").onclick=()=>$("#sidebar").classList.toggle("open");
-$("#todayLabel").textContent=new Date().toLocaleDateString("ms-MY",{
-  weekday:"long",day:"numeric",month:"long"
-});
-
-/* =========================
-   3. DASHBOARD
-========================= */
-function renderDashboard(){
-  $("#dashMoods").textContent=data.moods.length;
-  $("#dashActivities").textContent=data.activities.length;
-  $("#dashBreaths").textContent=data.breaths.length;
-
-  $("#journeyPreview").innerHTML=journeySteps.map((step,i)=>`
-    <div class="journey-step">
-      <div class="step-no">${i+1}</div>
-      <div style="flex:1">
-        <strong style="font-size:13px">${step}</strong>
-        <div class="muted">${i===0?"Kenal pasti emosi semasa":i===1?"Pilih aktiviti yang sesuai":"Langkah pilihan untuk kesejahteraan diri"}</div>
-      </div>
-    </div>
-  `).join("");
-}
-
-/* =========================
-   4. SEMAK EMOSI
-========================= */
-function renderMoods(){
-  $("#moodGrid").innerHTML=moods.map(m=>`
-    <button class="mood ${selectedMood===m.name?"selected":""}" data-mood="${m.name}">
-      <span>${m.emoji}</span><strong>${m.name}</strong>
-    </button>
-  `).join("");
-
-  $$("[data-mood]").forEach(button=>{
-    button.onclick=()=>{
-      selectedMood=button.dataset.mood;
-      renderMoods();
-    };
-  });
-}
-
-function saveMood(){
-  if(!selectedMood){
-    toast("Sila pilih emosi terlebih dahulu.");
-    return false;
-  }
-
-  data.moods.push({
-    id:Date.now(),
-    mood:selectedMood,
-    note:$("#moodNote").value.trim(),
-    date:today(),
-    created:new Date().toISOString()
-  });
-
-  selectedMood="";
-  $("#moodNote").value="";
-  save();
-  renderMoods();
-  toast("Semakan emosi berjaya disimpan.");
-  return true;
-}
-
-$("#saveMoodBtn").onclick=saveMood;
-
-/* =========================
-   5. CADANGAN AKTIVITI
-========================= */
-function renderRecommendation(){
-  const latest=data.moods[data.moods.length-1];
-  const mood=latest?.mood||selectedMood;
-  const item=moods.find(m=>m.name===mood);
-
-  $("#recommendation").innerHTML=item?`
-    <div class="activity">
-      <div class="activity-art">${item.emoji}</div>
-      <div>
-        <h2>${item.name}</h2>
-        <p>${item.desc}</p>
-        <div class="actions">
-          <button class="btn soft" onclick="go('physical')">Aktiviti fizikal</button>
-          <button class="btn secondary" onclick="go('breathing')">Latihan pernafasan</button>
-          <button class="btn secondary" onclick="go('journal')">Jurnal emosi</button>
-        </div>
-      </div>
-    </div>
-  `:`<div class="empty">Buat semakan emosi terlebih dahulu untuk melihat cadangan yang berkaitan.<br><button class="btn soft" style="margin-top:12px" onclick="go('mood')">Semak emosi</button></div>`;
-}
-
-/* =========================
-   6. AKTIVITI FIZIKAL + TIMER
-========================= */
-function formatTime(seconds){
-  seconds=Math.max(0,Math.ceil(seconds));
-  return `${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
-}
-
-function renderActivities(){
-  $("#activityList").innerHTML=activities.map((a,i)=>{
-    const key=today()+"-"+i;
-    const completed=data.activities.some(x=>x.key===key);
-    const remaining=activityTimers[i]?.remaining ?? parseInt(a[1])*60;
-
-    return `
-      <div class="card">
-        <div class="activity">
-          <div class="activity-art">${a[2]}</div>
-          <div class="activity-body">
-            <h3>${a[0]}</h3>
-            <div class="actions" style="margin:6px 0">
-              <span class="tag">⏱ ${a[1]}</span>
-              <span class="tag">${completed?"✓ Selesai hari ini":"Aktiviti pilihan"}</span>
-            </div>
-            <p class="muted">${a[3]}</p>
-            <div class="timer" id="timer-${i}">${formatTime(remaining)}</div>
-            <div class="activity-controls">
-              <button class="btn" onclick="startActivity(${i})">Mula</button>
-              <button class="btn secondary" onclick="pauseActivity(${i})">Jeda / Sambung</button>
-              <button class="btn secondary" onclick="resetActivity(${i})">Mula semula</button>
-              <button class="btn soft" onclick="completeActivity(${i})" ${completed?"disabled":""}>
-                ${completed?"Telah selesai":"Selesai aktiviti"}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
-function updateActivityTimer(i){
-  const el=$("#timer-"+i);
-  if(el) el.textContent=formatTime(activityTimers[i]?.remaining??0);
-}
-
-function startActivity(i){
-  const total=parseInt(activities[i][1])*60;
-  let timer=activityTimers[i]||{remaining:total,running:false};
-
-  if(timer.running||timer.remaining<=0) return;
-
-  timer.running=true;
-  timer.last=Date.now();
-  activityTimers[i]=timer;
-  activityTick(i);
-}
-
-function activityTick(i){
-  const timer=activityTimers[i];
-  if(!timer?.running) return;
-
-  const now=Date.now();
-  timer.remaining=Math.max(0,timer.remaining-(now-timer.last)/1000);
-  timer.last=now;
-  updateActivityTimer(i);
-
-  if(timer.remaining<=0){
-    timer.running=false;
-    toast("Masa tamat. Tekan Selesai Aktiviti jika anda telah melengkapkannya.");
-    return;
-  }
-
-  timer.timeout=setTimeout(()=>activityTick(i),250);
-}
-
-function pauseActivity(i){
-  const timer=activityTimers[i];
-  if(!timer) return;
-
-  if(timer.running){
-    timer.remaining=Math.max(0,timer.remaining-(Date.now()-timer.last)/1000);
-    timer.running=false;
-    clearTimeout(timer.timeout);
-  }else if(timer.remaining>0){
-    timer.running=true;
-    timer.last=Date.now();
-    activityTick(i);
-  }
-
-  updateActivityTimer(i);
-}
-
-function resetActivity(i){
-  clearTimeout(activityTimers[i]?.timeout);
-  activityTimers[i]={
-    remaining:parseInt(activities[i][1])*60,
-    running:false
-  };
-  updateActivityTimer(i);
-}
-
-function completeActivity(i){
-  const key=today()+"-"+i;
-  if(data.activities.some(x=>x.key===key)) return;
-
-  data.activities.push({
-    key,index:i,name:activities[i][0],date:today(),
-    created:new Date().toISOString()
-  });
-
-  if(activityTimers[i]){
-    activityTimers[i].running=false;
-    clearTimeout(activityTimers[i].timeout);
-  }
-
-  save();
-  renderActivities();
-  toast("Aktiviti ditandakan selesai.");
-}
-
-/* =========================
-   7. LATIHAN PERNAFASAN
-========================= */
-let breath={
-  running:false,remaining:120,last:0,
-  phase:"idle",phaseRemaining:0,timeout:null
-};
-
-function breathRender(){
-  const phase=breath.phase;
-  $("#breathInstruction").textContent=
-    phase==="inhale"?"Tarik nafas":
-    phase==="exhale"?"Hembus nafas":
-    phase==="done"?"Selesai":"Bersedia?";
-
-  $("#breathTimer").textContent=formatTime(breath.remaining);
-  $("#breathStatus").textContent=breath.running?
-    "Ikut rentak pernafasan yang selesa.":
-    phase==="done"?"Tahniah, sesi telah selesai.":"Tekan mula apabila anda bersedia.";
-
-  $("#breathOrb").style.transform=phase==="inhale"?"scale(1.18)":"scale(1)";
-  $("#breathStart").disabled=breath.running||phase==="done";
-  $("#breathPause").disabled=!breath.running;
-}
-
-function breathStart(){
-  if(breath.phase==="done") return;
-  if(breath.phase==="idle"){
-    breath.phase="inhale";
-    breath.phaseRemaining=4;
-  }
-  breath.running=true;
-  breath.last=Date.now();
-  breathLoop();
-  breathRender();
-}
-
-function breathLoop(){
-  if(!breath.running) return;
-
-  const now=Date.now();
-  const elapsed=(now-breath.last)/1000;
-  breath.last=now;
-  breath.remaining=Math.max(0,breath.remaining-elapsed);
-  breath.phaseRemaining-=elapsed;
-
-  if(breath.phaseRemaining<=0){
-    breath.phase=breath.phase==="inhale"?"exhale":"inhale";
-    breath.phaseRemaining=breath.phase==="inhale"?4:6;
-  }
-
-  if(breath.remaining<=0){
-    breath.running=false;
-    breath.phase="done";
-    data.breaths.push({date:today(),created:new Date().toISOString()});
-    save();
-    breathRender();
-    toast("Latihan pernafasan selesai.");
-    return;
-  }
-
-  breathRender();
-  breath.timeout=setTimeout(breathLoop,200);
-}
-
-function breathPause(){
-  if(!breath.running) return;
-
-  const elapsed=(Date.now()-breath.last)/1000;
-  breath.remaining=Math.max(0,breath.remaining-elapsed);
-  breath.phaseRemaining-=elapsed;
-  breath.running=false;
-  clearTimeout(breath.timeout);
-  breathRender();
-}
-
-function breathReset(){
-  breath.running=false;
-  clearTimeout(breath.timeout);
-  breath={
-    running:false,remaining:120,last:0,
-    phase:"idle",phaseRemaining:0,timeout:null
-  };
-  breathRender();
-}
-
-$("#breathStart").onclick=breathStart;
-$("#breathPause").onclick=breathPause;
-$("#breathReset").onclick=breathReset;
-
-/* =========================
-   8. JURNAL EMOSI
-========================= */
-function renderJournal(){
-  if(!data.journals.length){
-    $("#journalEntries").innerHTML='<div class="empty">Belum ada catatan jurnal.</div>';
-    return;
-  }
-
-  $("#journalEntries").innerHTML=data.journals.slice().reverse().map(j=>`
-    <div class="entry">
-      <div style="display:flex;justify-content:space-between;gap:10px">
-        <strong>${escapeHtml(j.mood||"Catatan refleksi")}</strong>
-        <span class="muted">${dateText(j.date)}</span>
-      </div>
-      <p style="white-space:pre-wrap">${escapeHtml(j.text)}</p>
-      <div class="actions">
-        <button class="btn secondary" onclick="editJournal(${j.id})">Sunting</button>
-        <button class="btn danger" onclick="deleteJournal(${j.id})">Padam</button>
-      </div>
-    </div>
-  `).join("");
-}
-
-$("#saveJournal").onclick=()=>{
-  const text=$("#journalText").value.trim();
-  if(!text){toast("Sila tulis catatan terlebih dahulu.");return;}
-
-  if(editingJournal){
-    const item=data.journals.find(j=>j.id===editingJournal);
-    if(item){
-      item.text=text;
-      item.mood=$("#journalMood").value;
-      item.date=today();
-    }
-    editingJournal=null;
-  }else{
-    data.journals.push({
-      id:Date.now(),text,mood:$("#journalMood").value,
-      date:today(),created:new Date().toISOString()
-    });
-  }
-
-  $("#journalText").value="";
-  $("#journalMood").value="";
-  $("#cancelEdit").style.display="none";
-  $("#saveJournal").textContent="Simpan catatan";
-  save();
-  toast("Catatan disimpan pada peranti ini.");
-};
-
-function editJournal(id){
-  const item=data.journals.find(j=>j.id===id);
-  if(!item) return;
-
-  editingJournal=id;
-  $("#journalText").value=item.text;
-  $("#journalMood").value=item.mood||"";
-  $("#saveJournal").textContent="Simpan perubahan";
-  $("#cancelEdit").style.display="inline-block";
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function deleteJournal(id){
-  if(!confirm("Padam catatan ini?")) return;
-  data.journals=data.journals.filter(j=>j.id!==id);
-  save();
-  toast("Catatan dipadam.");
-}
-
-$("#cancelEdit").onclick=()=>{
-  editingJournal=null;
-  $("#journalText").value="";
-  $("#journalMood").value="";
-  $("#cancelEdit").style.display="none";
-  $("#saveJournal").textContent="Simpan catatan";
-};
-
-/* =========================
-   9. PERKEMBANGAN DAN CARTA
-========================= */
-function renderProgress(){
-  $("#statMood").textContent=data.moods.length;
-  $("#statActivity").textContent=data.activities.length;
-  $("#statBreath").textContent=data.breaths.length;
-  $("#statJournal").textContent=data.journals.length;
-  $("#statDays").textContent=data.usedDays.length;
-
-  const counts=Object.fromEntries(
-    moods.map(m=>[m.name,data.moods.filter(x=>x.mood===m.name).length])
-  );
-  const max=Math.max(1,...Object.values(counts));
-
-  $("#moodChart").innerHTML=Object.entries(counts).map(([m,n])=>`
-    <div class="bar-row">
-      <span>${m}</span>
-      <div class="bar"><span style="width:${n/max*100}%"></span></div>
-      <strong>${n}</strong>
-    </div>
-  `).join("");
-}
-
-/* =========================
-   10. CSV DAN PADAM DATA
-========================= */
-function downloadCSV(filename,rows){
-  const csv=rows.map(row=>row.map(value=>
-    '"'+String(value??"").replace(/"/g,'""')+'"'
-  ).join(",")).join("\r\n");
-
-  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;
-  a.download=filename;
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
-
-$("#exportPersonal").onclick=()=>{
-  const rows=[["jenis","tarikh","butiran"]];
-
-  data.moods.forEach(x=>rows.push(["emosi",x.date,x.mood+": "+x.note]));
-  data.activities.forEach(x=>rows.push(["aktiviti",x.date,x.name]));
-  data.breaths.forEach(x=>rows.push(["pernafasan",x.date,"Sesi 2 minit selesai"]));
-  data.journals.forEach(x=>rows.push(["jurnal",x.date,(x.mood||"")+": "+x.text]));
-
-  downloadCSV("emotion24-7-data-peribadi.csv",rows);
-  toast("Fail CSV peribadi disediakan.");
-};
-
-$("#deleteData").onclick=()=>{
-  if(!confirm("Padam semua data pada peranti ini? Tindakan ini tidak boleh dibatalkan.")) return;
-
-  Object.values(activityTimers).forEach(t=>clearTimeout(t.timeout));
-  activityTimers={};
-  breathReset();
-  localStorage.removeItem(STORAGE_KEY);
-  data=defaultData();
-  selectedMood="";
-  editingJournal=null;
-  journeyIndex=0;
-  journeyMoodSaved=false;
-  renderAll();
-  toast("Semua data pada peranti ini telah dipadam.");
-};
-
-/* =========================
-   11. MOTIVASI HARIAN
-========================= */
-function renderMotivation(){
-  const index=(new Date().getDate()+new Date().getMonth())%motivations.length;
-  $("#motivationText").textContent=motivations[index];
-  $("#motivationDate").textContent=new Date().toLocaleDateString("ms-MY",{
-    day:"numeric",month:"long",year:"numeric"
-  });
-}
-
-$("#newMotivation").onclick=()=>{
-  $("#motivationText").textContent=motivations[Math.floor(Math.random()*motivations.length)];
-};
-
-/* =========================
-   12. CABARAN DIRI
-========================= */
-function renderChallenges(){
-  const days=[3,5,7];
-
-  $("#challengeCards").innerHTML=days.map(n=>{
-    const c=data.challenge[n]||{start:null,done:[]};
-    const pct=Math.min(100,Math.round(c.done.length/n*100));
-
-    return `
-      <div class="card">
-        <div class="card-icon">🏅</div>
-        <h3>Cabaran ${n} Hari</h3>
-        <p class="muted">Bina rutin kesejahteraan diri dengan satu tindakan kecil setiap hari.</p>
-        <div class="progress"><span style="width:${pct}%"></span></div>
-        <p class="muted">${c.done.length} daripada ${n} hari selesai</p>
-        <div class="actions">
-          <button class="btn soft" onclick="startChallenge(${n})">${c.start?"Teruskan cabaran":"Mula cabaran"}</button>
-          <button class="btn secondary" onclick="completeChallengeDay(${n})"
-            ${!c.start||c.done.includes(today())||c.done.length>=n?"disabled":""}>
-            Tandakan hari ini selesai
-          </button>
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
-function startChallenge(n){
-  if(!data.challenge[n]) data.challenge[n]={start:today(),done:[]};
-  save();
-  renderChallenges();
-  toast("Cabaran "+n+" hari dimulakan.");
-}
-
-function completeChallengeDay(n){
-  const c=data.challenge[n];
-  if(!c||!c.start||c.done.includes(today())||c.done.length>=n) return;
-
-  c.done.push(today());
-  save();
-  renderChallenges();
-  toast("Hari ini berjaya direkodkan.");
-}
-
-/* =========================
-   13. MODAL
-========================= */
-function showModal(content,buttons){
-  $("#modalContent").innerHTML=content;
-  $("#modalActions").innerHTML="";
-
-  buttons.forEach(b=>{
-    const button=document.createElement("button");
-    button.className="btn "+(b.class||"");
-    button.textContent=b.label;
-    button.onclick=b.fn;
-    $("#modalActions").appendChild(button);
-  });
-
-  $("#modal").classList.add("show");
-}
-
-function closeModal(){
-  $("#modal").classList.remove("show");
-}
-
-/* =========================
-   14. KAJIAN KEBERKESANAN
-========================= */
-function renderStudyPanel(){
-  const s=data.study;
-
-  if(!s){
-    $("#studyPanel").innerHTML='<div class="empty">Anda belum menyertai kajian. Website masih boleh digunakan seperti biasa.</div>';
-    return;
-  }
-
-  const start=s.periodStart||s.pre?.date||s.joined;
-  const due=new Date(start+"T12:00:00");
-  due.setDate(due.getDate()+14);
-  const dueString=[
-    due.getFullYear(),
-    String(due.getMonth()+1).padStart(2,"0"),
-    String(due.getDate()).padStart(2,"0")
-  ].join("-");
-
-  const status=s.feedback?"Kajian selesai":
-    !s.pre?"Menunggu soal selidik awal":
-    !s.post&&today()>=dueString?"Soal selidik akhir tersedia":
-    "Dalam tempoh penggunaan 14 hari";
-
-  let buttons="";
-
-  if(!s.pre){
-    buttons+='<button class="btn" onclick="showPretest()">Lengkapkan pre-test</button>';
-  }else if(!s.post&&today()>=dueString){
-    buttons+='<button class="btn" onclick="showPosttest()">Lengkapkan post-test</button>';
-  }
-
-  if(s.post&&!s.feedback){
-    buttons+='<button class="btn" onclick="showStudyFeedback()">Lengkapkan maklum balas kajian</button>';
-  }
-
-  $("#studyPanel").innerHTML=`
-    <h3>Status penyertaan</h3>
-    <p><strong>Kod peserta:</strong> ${escapeHtml(s.code)}</p>
-    <p><strong>Tarikh mula:</strong> ${dateText(s.joined)}</p>
-    <p><strong>Tarikh post-test:</strong> ${dateText(dueString)}</p>
-    <p><strong>Status:</strong> ${status}</p>
-    <div class="actions">
-      ${buttons}
-      <button class="btn secondary" onclick="exportStudy()">Eksport data kajian (CSV)</button>
-      <button class="btn danger" onclick="withdrawStudy()">Tarik diri / padam data kajian</button>
-    </div>
-  `;
-}
-
-$("#joinStudy").onclick=()=>{
-  if(data.study){
-    toast("Anda telah mempunyai rekod penyertaan kajian.");
-    return;
-  }
-
-  showModal(`
-    <h2>Pengesahan penyertaan</h2>
-    <p>Sila sahkan bahawa anda berumur 18 tahun ke atas. Penyertaan adalah secara sukarela.</p>
-    <div class="form-row">
-      <label><input type="checkbox" id="ageConfirm" style="width:auto;margin-right:8px">
-      Saya mengesahkan bahawa saya berumur 18 tahun ke atas dan bersetuju menyertai kajian secara sukarela.</label>
-    </div>
-    <div class="form-row">
-      <label for="participantCode">Kod peserta ciptaan sendiri</label>
-      <input id="participantCode" maxlength="24" placeholder="Contoh: EMO-024-A">
-    </div>
-    <div class="notice">Jangan gunakan nama atau nombor pengenalan sebagai kod peserta. Data disimpan pada pelayar ini sahaja.</div>
-  `,[
-    {label:"Batal",class:"secondary",fn:closeModal},
-    {label:"Teruskan",fn:()=>{
-      const age=$("#ageConfirm").checked;
-      const code=$("#participantCode").value.trim();
-
-      if(!age){toast("Pengesahan umur diperlukan.");return;}
-      if(!code){toast("Sila cipta kod peserta.");return;}
-
-      data.study={
-        code,joined:today(),pre:null,post:null,feedback:null
-      };
-
-      save();
-      closeModal();
-      showPretest();
-    }}
-  ]);
-};
-
-$("#studyStatusBtn").onclick=()=>{
-  renderStudyPanel();
-  $("#studyPanel").scrollIntoView({behavior:"smooth"});
-};
-
-function renderLikert(questions,prefix){
-  return questions.map((q,i)=>`
-    <div class="question">
-      <p>${i+1}. ${q}</p>
-      <div class="scale">
-        ${scaleLabels.map((label,j)=>`
-          <label><input type="radio" name="${prefix}${i}" value="${j+1}">${j+1}</label>
-        `).join("")}
-      </div>
-      <div class="muted" style="margin-top:5px">1 = Sangat Tidak Setuju · 5 = Sangat Setuju</div>
-    </div>
-  `).join("");
-}
-
-function readLikert(questions,prefix){
-  const answers=[];
-  for(let i=0;i<questions.length;i++){
-    const selected=$(`input[name="${prefix}${i}"]:checked`);
-    if(!selected) return null;
-    answers.push(Number(selected.value));
-  }
-  return answers;
-}
-
-function showPretest(){
-  if(!data.study) return;
-
-  showModal(`
-    <h2>Soal selidik awal (Pre-test)</h2>
-    <p>Sila jawab semua pernyataan berdasarkan keadaan anda sekarang.</p>
-    ${renderLikert(preQuestions,"pre")}
-  `,[
-    {label:"Batal",class:"secondary",fn:closeModal},
-    {label:"Hantar pre-test",fn:()=>{
-      const answers=readLikert(preQuestions,"pre");
-      if(!answers){toast("Sila jawab semua pernyataan.");return;}
-
-      data.study.pre={answers,date:today()};
-      data.study.periodStart=today();
-      save();
-      closeModal();
-      toast("Pre-test disimpan. Tempoh 14 hari bermula hari ini.");
-    }}
-  ]);
-}
-
-function showPosttest(){
-  if(!data.study?.pre) return;
-
-  showModal(`
-    <h2>Soal selidik akhir (Post-test)</h2>
-    <p>Sila jawab semua pernyataan berdasarkan keadaan anda sekarang.</p>
-    ${renderLikert(preQuestions,"post")}
-  `,[
-    {label:"Batal",class:"secondary",fn:closeModal},
-    {label:"Hantar post-test",fn:()=>{
-      const answers=readLikert(preQuestions,"post");
-      if(!answers){toast("Sila jawab semua pernyataan.");return;}
-
-      data.study.post={answers,date:today()};
-      save();
-      closeModal();
-      showStudyFeedback();
-    }}
-  ]);
-}
-
-function showStudyFeedback(){
-  showModal(`
-    <h2>Maklum balas kajian</h2>
-    <p>Nilai pengalaman anda menggunakan Emotion24-7.</p>
-    ${renderLikert(feedbackQuestions,"fb")}
-    <div class="form-row">
-      <label for="studyComment">Komen tambahan (pilihan)</label>
-      <textarea id="studyComment" placeholder="Komen anda..."></textarea>
-    </div>
-  `,[
-    {label:"Batal",class:"secondary",fn:closeModal},
-    {label:"Hantar maklum balas",fn:()=>{
-      const answers=readLikert(feedbackQuestions,"fb");
-      if(!answers){toast("Sila jawab semua pernyataan.");return;}
-
-      data.study.feedback={
-        answers,
-        comment:$("#studyComment").value.trim(),
-        date:today()
-      };
-
-      save();
-      closeModal();
-
-      showModal(
-        "<h2>Terima kasih!</h2><p>Anda telah melengkapkan proses kajian Emotion24-7. Terima kasih atas masa dan kerjasama anda.</p>",
-        [{label:"Selesai",fn:closeModal}]
-      );
-    }}
-  ]);
-}
-
-function exportStudy(){
-  const s=data.study;
-  if(!s){toast("Tiada data kajian.");return;}
-
-  const rows=[["kod_peserta","peringkat","tarikh","item","skor","komen"]];
-
-  [["pre",s.pre],["post",s.post],["feedback",s.feedback]].forEach(([type,obj])=>{
-    if(obj?.answers){
-      obj.answers.forEach((value,index)=>{
-        rows.push([s.code,type,obj.date,index+1,value,obj.comment||""]);
-      });
-    }
-  });
-
-  if(s.feedback?.comment){
-    rows.push([s.code,"feedback",s.feedback.date,"komen","",s.feedback.comment]);
-  }
-
-  downloadCSV("emotion24-7-data-kajian.csv",rows);
-  toast("Fail CSV kajian disediakan.");
-}
-
-function withdrawStudy(){
-  showModal(
-    "<h2>Tarik diri daripada kajian?</h2><p>Data kajian yang tersimpan pada peranti ini akan dipadam. Rekod peribadi website yang lain akan dikekalkan.</p>",
-    [
-      {label:"Batal",class:"secondary",fn:closeModal},
-      {label:"Ya, padam data kajian",class:"danger",fn:()=>{
-        data.study=null;
-        save();
-        closeModal();
-        toast("Data kajian pada peranti ini dipadam.");
-      }}
-    ]
-  );
-}
-
-/* =========================
-   15. MAKLUM BALAS UMUM
-========================= */
-$("#saveGeneralFeedback").onclick=()=>{
-  const text=$("#generalFeedback").value.trim();
-  if(!text){toast("Sila masukkan maklum balas.");return;}
-
-  data.generalFeedback.push({text,date:today()});
-  save();
-  $("#generalFeedback").value="";
-  $("#feedbackSaved").textContent="Maklum balas disimpan pada peranti ini. Terima kasih.";
-  toast("Terima kasih atas maklum balas anda.");
-};
-
-/* =========================
-   16. DAILY EMOTION JOURNEY
-========================= */
-function journeySelectMood(mood){
-  selectedMood=mood;
-  renderJourney();
-}
-
-function renderJourney(){
-  const i=journeyIndex;
-
-  $("#journeyTitle").textContent=`Langkah ${i+1} daripada 7 · ${journeySteps[i]}`;
-  $("#journeyPct").textContent=Math.round((i+1)/7*100)+"%";
-  $("#journeyBar").style.width=((i+1)/7*100)+"%";
-
-  let content="";
-
-  if(i===0){
-    content=`
-      <h2>Semak emosi anda</h2>
-      <p>Pilih emosi yang paling hampir dengan perasaan anda sekarang.</p>
-      <div class="mood-grid">
-        ${moods.map(m=>`
-          <button class="mood ${selectedMood===m.name?"selected":""}" onclick="journeySelectMood('${m.name}')">
-            <span>${m.emoji}</span><strong>${m.name}</strong>
-          </button>
-        `).join("")}
-      </div>
-      <textarea id="journeyMoodNote" placeholder="Nota ringkas (pilihan)"></textarea>
-    `;
-  }
-
-  if(i===1){
-    const latest=data.moods[data.moods.length-1];
-    const item=moods.find(m=>m.name===latest?.mood);
-    content=`
-      <h2>Cadangan aktiviti</h2>
-      ${item?`<p><strong>${item.emoji} ${item.name}</strong></p><p>${item.desc}</p>`:"<p>Buat semakan emosi untuk melihat cadangan yang berkaitan.</p>"}
-      <button class="btn soft" onclick="go('suggest')">Lihat cadangan aktiviti</button>
-    `;
-  }
-
-  if(i===2){
-    content=`
-      <h2>Aktiviti fizikal</h2>
-      <p>Pilih satu aktiviti ringkas atau buka halaman aktiviti fizikal untuk melihat kesemuanya.</p>
-      <button class="btn" onclick="go('physical')">Lihat 8 aktiviti fizikal</button>
-    `;
-  }
-
-  if(i===3){
-    content=`
-      <h2>Latihan pernafasan</h2>
-      <p>Tarik nafas selama 4 saat dan hembus selama 6 saat selama 2 minit, tanpa menahan nafas.</p>
-      <button class="btn" onclick="go('breathing')">Buka latihan pernafasan</button>
-    `;
-  }
-
-  if(i===4){
-    content=`
-      <h2>Jurnal emosi</h2>
-      <p>Catat satu perkara yang anda fikirkan atau syukuri hari ini. Langkah ini adalah pilihan.</p>
-      <button class="btn" onclick="go('journal')">Buka jurnal emosi</button>
-    `;
-  }
-
-  if(i===5){
-    content=`
-      <h2>Analisis dan perkembangan</h2>
-      <p>Semak rekod emosi dan aktiviti yang telah anda simpan. Data berdasarkan rekod sebenar anda.</p>
-      <button class="btn" onclick="go('progress')">Lihat perkembangan</button>
-    `;
-  }
-
-  if(i===6){
-    const index=(new Date().getDate()+new Date().getMonth())%motivations.length;
-    content=`
-      <h2>Motivasi harian</h2>
-      <p>“${motivations[index]}”</p>
-      <button class="btn" onclick="go('motivation')">Lihat motivasi harian</button>
-    `;
-  }
-
-  $("#journeyContent").innerHTML=content;
-  $("#journeyBack").disabled=i===0;
-  $("#journeyNext").textContent=i===6?"Selesai ✓":"Seterusnya →";
-}
-
-$("#journeyBack").onclick=()=>{
-  journeyIndex=Math.max(0,journeyIndex-1);
-  renderJourney();
-};
-
-$("#journeyNext").onclick=()=>{
-  if(journeyIndex===0&&!journeyMoodSaved){
-    if(!selectedMood){
-      toast("Pilih emosi dahulu atau gunakan menu lain.");
-      return;
-    }
-
-    data.moods.push({
-      id:Date.now(),
-      mood:selectedMood,
-      note:$("#journeyMoodNote")?.value.trim()||"",
-      date:today(),
-      created:new Date().toISOString()
-    });
-
-    selectedMood="";
-    journeyMoodSaved=true;
-    save();
-    renderMoods();
-  }
-
-  if(journeyIndex===6){
-    journeyIndex=0;
-    journeyMoodSaved=false;
-    toast("Emotion Journey selesai. Terima kasih kerana meluangkan masa.");
-    go("dashboard");
-    return;
-  }
-
-  journeyIndex++;
-  renderJourney();
-};
-
-/* =========================
-   17. PAPARAN AWAL
-========================= */
+function toggleMenu(){document.getElementById("sidebar").classList.toggle("open")}
+function showModal(html){document.getElementById("modalContent").innerHTML=html;document.getElementById("modalBackdrop").classList.add("show")}
+function closeModal(){document.getElementById("modalBackdrop").classList.remove("show")}
+document.getElementById("modalBackdrop").addEventListener("click",e=>{if(e.target.id==="modalBackdrop")closeModal()});
 function renderAll(){
-  renderDashboard();
-  renderMoods();
-  renderRecommendation();
-  renderActivities();
-  renderProgress();
-  renderJournal();
-  renderChallenges();
-  renderStudyPanel();
-  renderMotivation();
-  breathRender();
+ document.getElementById("todayLabel").textContent=new Date().toLocaleDateString("ms-MY",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ renderMood();renderSuggestions();renderActivities();renderJournals();renderProgress();renderChallenge();renderStudy();renderFeedback();renderDashboard();renderMotivation();
 }
-
-renderAll();
-markUsed();
-
-/* Peringatan post-test selepas 14 hari */
-function checkPostReminder(){
-  const s=data.study;
-  if(!s?.pre||s.post) return;
-
-  const start=s.periodStart||s.pre.date;
-  const due=new Date(start+"T12:00:00");
-  due.setDate(due.getDate()+14);
-
-  const dueString=[
-    due.getFullYear(),
-    String(due.getMonth()+1).padStart(2,"0"),
-    String(due.getDate()).padStart(2,"0")
-  ].join("-");
-
-  if(today()>=dueString&&!sessionStorage.getItem("postReminderShown")){
-    sessionStorage.setItem("postReminderShown","1");
-
-    setTimeout(()=>{
-      showModal(
-        "<h2>Masa untuk post-test</h2><p>Tempoh penggunaan 14 hari telah berlalu. Anda boleh melengkapkan soal selidik akhir sekarang atau menangguhkannya sehingga lawatan seterusnya.</p>",
-        [
-          {label:"Ingatkan saya kemudian",class:"secondary",fn:closeModal},
-          {label:"Mulakan post-test",fn:()=>{
-            closeModal();
-            showPosttest();
-          }}
-        ]
-      );
-    },600);
-  }
+function renderMood(){
+ document.getElementById("moodChoices").innerHTML=moods.map(([m,e])=>`<button class="mood" data-mood="${m}" onclick="selectMood('${m}')"><span>${e}</span><strong>${m}</strong></button>`).join("");
+ let last=data.moods[data.moods.length-1];
+ document.getElementById("moodHistory").innerHTML=data.moods.length?data.moods.slice().reverse().slice(0,8).map(x=>`<div class="entry"><strong>${escapeHTML(x.mood)}</strong> <span class="tag">${escapeHTML(x.date)}</span><p>${escapeHTML(x.note||"Tiada catatan tambahan")}</p></div>`).join(""):'<div class="empty">Belum ada rekod emosi.</div>';
 }
-
-checkPostReminder();
+function selectMood(m){
+ document.querySelectorAll("#moodChoices .mood").forEach(b=>b.classList.toggle("selected",b.dataset.mood===m));
+ selectedMood=m;
+}
+let selectedMood="";
+function saveMood(fromJourney=false){
+ if(!selectedMood){alert("Sila pilih emosi terlebih dahulu.");return false}
+ let date=today();
+ let existing=data.moods.find(x=>x.date===date&&x.mood===selectedMood&&x.note===(document.getElementById("moodNote")?.value.trim()||""));
+ if(!existing)data.moods.push({id:Date.now(),mood:selectedMood,note:document.getElementById("moodNote")?.value.trim()||"",date,time:nowStamp()});
+ save();renderAll();
+ if(!fromJourney)alert("Rekod emosi berjaya disimpan.");
+ return true;
+}
+function renderSuggestions(){
+ document.getElementById("suggestMoods").innerHTML=moods.map(([m,e])=>`<button class="mood" onclick="showAdvice('${m}')"><span>${e}</span><strong>${m}</strong></button>`).join("");
+}
+function showAdvice(m){
+ document.getElementById("suggestResult").innerHTML="<strong>Cadangan untuk emosi "+m+"</strong><br>"+advice[m]+"<br><br><button class='btn small' onclick=\"go('physical')\">Lihat Aktiviti Fizikal</button> <button class='btn soft small' onclick=\"go('breathing')\">Latihan Pernafasan</button>";
+}
+const activities=[
+ ["Regangan Bahu","🙆","2:00","Berdiri atau duduk dengan selesa. Gerakkan bahu secara perlahan ke hadapan dan ke belakang."],
+ ["Regangan Tangan","🙋","2:00","Luruskan tangan secara bergilir dan lakukan regangan lembut tanpa memaksa sendi."],
+ ["Berjalan Setempat","🚶","3:00","Berjalan setempat pada kelajuan yang selesa sambil menggerakkan tangan secara semula jadi."],
+ ["Langkah ke Sisi","↔️","3:00","Ambil langkah ke kanan dan kiri secara bergilir dengan ruang yang mencukupi."],
+ ["Jalan Santai","🌳","5:00","Berjalan pada kadar santai di kawasan yang selamat dan sesuai."],
+ ["Tekan Tubi Dinding","🧍","3:00","Berdiri menghadap dinding. Letakkan tapak tangan pada dinding dan lakukan pergerakan perlahan mengikut kemampuan."],
+ ["Mini Squat","🦵","3:00","Berdiri dengan kaki pada kedudukan selesa. Bengkokkan lutut sedikit dan kembali ke posisi asal."],
+ ["Putaran Badan","🔄","2:00","Dalam posisi berdiri atau duduk, putarkan bahagian atas badan secara perlahan ke kiri dan kanan."]
+];
+let activityTimers={};
+function activityDone(i){return data.activities.some(x=>x.date===today()&&x.index===i)}
+function renderActivities(){
+ document.getElementById("activityCount").textContent=activities.filter((a,i)=>activityDone(i)).length+"/8 selesai hari ini";
+ document.getElementById("activityList").innerHTML=activities.map((a,i)=>{
+ let done=activityDone(i),t=activityTimers[i];
+ return `<div class="activity"><div class="activity-icon">${a[1]}</div><div class="activity-info"><h3>${a[0]} ${done?' <span class="tag">Selesai ✓</span>':''}</h3><p>⏱ ${a[2]} minit · ${a[3]}</p><div class="muted" id="actTimer${i}">${t?timeString(t.remaining):a[2]}</div></div><div class="activity-actions"><button class="btn small" onclick="startActivity(${i})" ${done?'disabled':''}>${t&&t.running?'Sedang berjalan':t?'Sambung':'Mula'}</button><button class="btn soft small" onclick="pauseActivity(${i})">Jeda</button><button class="btn secondary small" onclick="resetActivity(${i})">Reset</button><button class="btn green small" onclick="completeActivity(${i})" ${done?'disabled':''}>Selesai</button></div></div>`;
+ }).join("");
+}
+function parseTime(s){let a=s.split(":").map(Number);return a[0]*60+a[1]}
+function timeString(s){let n=Math.max(0,Math.ceil(s));return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")}
+function startActivity(i){
+ if(activityDone(i))return;
+ if(!activityTimers[i])activityTimers[i]={remaining:parseTime(activities[i][2]),running:false,interval:null};
+ let t=activityTimers[i];if(t.running)return;t.running=true;
+ t.interval=setInterval(()=>{t.remaining=Math.max(0,t.remaining-1);let el=document.getElementById("actTimer"+i);if(el)el.textContent=timeString(t.remaining);if(t.remaining<=0)pauseActivity(i)},1000);
+ renderActivities();
+}
+function pauseActivity(i){let t=activityTimers[i];if(t){clearInterval(t.interval);t.running=false;let el=document.getElementById("actTimer"+i);if(el)el.textContent=timeString(t.remaining)}}
+function resetActivity(i){pauseActivity(i);delete activityTimers[i];renderActivities()}
+function completeActivity(i){
+ if(activityDone(i))return;
+ pauseActivity(i);data.activities.push({index:i,name:activities[i][0],date:today(),time:nowStamp()});save();renderAll();alert("Aktiviti ditandakan sebagai selesai!");
+}
+let breath={remaining:120,running:false,interval:null,startedAt:0,phase:""};
+function startBreathing(){
+ if(breath.remaining<=0)breath.remaining=120;
+ if(breath.running)return;
+ breath.running=true;breath.startedAt=Date.now();
+ breath.interval=setInterval(()=>{
+  let elapsed=Math.floor((Date.now()-breath.startedAt)/1000);
+  breath.remaining=Math.max(0,breath.remaining-elapsed);breath.startedAt=Date.now();
+  document.getElementById("breathTimer").textContent=timeString(breath.remaining);
+  let cycle=(120-breath.remaining)%10;
+  let phase=cycle<4?"Tarik nafas":"Hembus nafas";
+  document.getElementById("breathInstruction").textContent=phase;
+  document.getElementById("breathCircle").classList.toggle("expand",cycle<4);
+  if(breath.remaining<=0){clearInterval(breath.interval);breath.running=false;data.breaths.push({date:today(),time:nowStamp()});save();renderAll();alert("Tahniah! Sesi latihan pernafasan selesai.");}
+ },250);
+}
+function pauseBreathing(){
+ if(!breath.running)return;
+ clearInterval(breath.interval);breath.running=false;
+}
+function resetBreathing(){
+ pauseBreathing();breath.remaining=120;
+ document.getElementById("breathTimer").textContent="02:00";
+ document.getElementById("breathInstruction").textContent="Bersedia";
+ document.getElementById("breathCircle").classList.remove("expand");
+}
+function saveJournal(){
+ let text=document.getElementById("journalText").value.trim(),mood=document.getElementById("journalMood").value,id=document.getElementById("journalEditId").value;
+ if(!text){alert("Sila masukkan catatan jurnal.");return}
+ if(id){let j=data.journals.find(x=>String(x.id)===id);if(j){j.text=text;j.mood=mood;j.updated=nowStamp()}}
+ else data.journals.push({id:Date.now(),text,mood,date:today(),time:nowStamp()});
+ save();clearJournalForm();renderAll();alert("Catatan jurnal disimpan.");
+}
+function clearJournalForm(){document.getElementById("journalText").value="";document.getElementById("journalMood").value="";document.getElementById("journalEditId").value=""}
+function renderJournals(){
+ document.getElementById("journalEntries").innerHTML=data.journals.length?data.journals.slice().reverse().map(j=>`<div class="entry"><div class="row"><strong>${escapeHTML(j.mood||"Catatan")}</strong><span class="tag">${escapeHTML(j.date)}</span></div><p>${escapeHTML(j.text)}</p><button class="btn soft small" onclick="editJournal(${j.id})">Edit</button> <button class="btn danger small" onclick="deleteJournal(${j.id})">Padam</button></div>`).join(""):'<div class="empty">Belum ada catatan jurnal.</div>';
+}
+function editJournal(id){let j=data.journals.find(x=>x.id===id);if(!j)return;document.getElementById("journalEditId").value=id;document.getElementById("journalText").value=j.text;document.getElementById("journalMood").value=j.mood||"";document.getElementById("journalText").scrollIntoView({behavior:"smooth",block:"center"})}
+function deleteJournal(id){if(!confirm("Padam catatan ini?"))return;data.journals=data.journals.filter(x=>x.id!==id);save();renderAll()}
+function renderDashboard(){
+ let last=data.moods[data.moods.length-1];
+ document.getElementById("dashMood").textContent=last?last.mood:"—";
+ document.getElementById("dashActivity").textContent=data.activities.length;
+ document.getElementById("dashBreath").textContent=data.breaths.length;
+ let done=data.journeyDate===today()?data.journeyDone.length:0;
+ document.getElementById("dashJourneyBar").style.width=(done/7*100)+"%";
+ document.getElementById("dashJourneyText").textContent=done+" daripada 7 langkah selesai hari ini.";
+}
+function renderProgress(){
+ let set=(id,n)=>document.getElementById(id).textContent=n;
+ set("pMood",data.moods.length);set("pActivity",data.activities.length);set("pBreath",data.breaths.length);set("pJournal",data.journals.length);
+ set("pDays",new Set([...data.moods,...data.activities,...data.breaths,...data.journals].map(x=>x.date)).size);
+ set("pChallenge",data.challengeDays.length);
+ let counts=moods.map(([m])=>data.moods.filter(x=>x.mood===m).length),max=Math.max(1,...counts);
+ document.getElementById("emotionChart").innerHTML=moods.map(([m,e],i)=>`<div class="bar-col"><strong style="font-size:10px">${counts[i]}</strong><div class="bar" style="height:${Math.max(3,counts[i]/max*115)}px"></div><small>${e}<br>${m}</small></div>`).join("");
+}
+function csvDownload(filename,rows){
+ let csv=rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ let blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+ let url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url);
+}
+function exportPersonalCSV(){
+ let rows=[["Jenis","Tarikh","Masa","Butiran"]];
+ data.moods.forEach(x=>rows.push(["Emosi",x.date,x.time,x.mood+" - "+x.note]));
+ data.activities.forEach(x=>rows.push(["Aktiviti fizikal",x.date,x.time,x.name]));
+ data.breaths.forEach(x=>rows.push(["Latihan pernafasan",x.date,x.time,"Selesai"]));
+ data.journals.forEach(x=>rows.push(["Jurnal",x.date,x.time,x.mood+" - "+x.text]));
+ csvDownload("Emotion24-7_Data_Peribadi.csv",rows);
+}
+function deleteAllData(){
+ if(!confirm("Adakah anda pasti mahu memadam SEMUA data Emotion24-7 pada browser ini? Tindakan ini tidak boleh dipulihkan."))return;
+ Object.keys(activityTimers).forEach(pauseActivity);pauseBreathing();
+ data={...defaults};save();resetBreathing();renderAll();alert("Data setempat telah dipadam.");
+}
+const quotes=[
+ ["Anda tidak perlu menjadi sempurna untuk terus berkembang.","Motivasi Harian"],
+ ["Langkah kecil yang konsisten juga membawa perubahan.","Motivasi Harian"],
+ ["Berikan ruang kepada diri untuk berehat dan memulakan semula.","Motivasi Harian"],
+ ["Kenali emosi anda. Hargai diri anda.","Motivasi Harian"],
+ ["Setiap hari ialah peluang untuk belajar sesuatu tentang diri sendiri.","Motivasi Harian"],
+ ["Kekuatan bukan bermaksud tidak pernah berasa sukar.","Motivasi Harian"],
+ ["Fokus kepada perkara yang mampu anda lakukan hari ini.","Motivasi Harian"]
+];
+function renderMotivation(){let n=new Date().getDate()%quotes.length;document.getElementById("dailyQuote").textContent="“"+quotes[n][0]+"”";document.getElementById("quoteAuthor").textContent=quotes[n][1]}
+function newQuote(){let n=Math.floor(Math.random()*quotes.length);document.getElementById("dailyQuote").textContent="“"+quotes[n][0]+"”"}
+function startChallenge(days){
+ if(data.challenge&&data.challengeDays.length<data.challenge.days&&!confirm("Anda sedang mempunyai cabaran aktif. Gantikan dengan cabaran baharu?"))return;
+ data.challenge={days,start:today()};data.challengeDays=[];save();renderChallenge();
+}
+function markChallengeDay(){
+ if(!data.challenge){alert("Pilih cabaran terlebih dahulu.");return}
+ if(data.challengeDays.includes(today())){alert("Cabaran hari ini telah direkodkan.");return}
+ data.challengeDays.push(today());save();renderAll();
+}
+function renderChallenge(){
+ let el=document.getElementById("challengeDisplay");
+ if(!data.challenge){el.innerHTML='<div class="empty">Anda belum memilih cabaran. Pilih cabaran 3, 5 atau 7 hari di atas.</div>';return}
+ let days=data.challenge.days,done=data.challengeDays.length;
+ el.innerHTML=`<p><strong>Cabaran ${days} Hari</strong></p><div class="progress-track"><div class="progress-fill" style="width:${Math.min(100,done/days*100)}%"></div></div><p>${done} daripada ${days} hari direkodkan.</p><div class="row" style="flex-wrap:wrap">${Array.from({length:days},(_,i)=>`<span class="tag">${data.challengeDays[i]?'✓':'○'} Hari ${i+1}</span>`).join("")}</div><p class="muted">Tandakan hari hanya selepas anda melakukan aktiviti positif pilihan anda. Rekod tidak akan dibuat secara automatik.</p><button class="btn green" onclick="markChallengeDay()" ${done>=days?'disabled':''}>Rekod Cabaran Hari Ini</button> <button class="btn danger small" onclick="resetChallenge()">Tamatkan Cabaran</button>`;
+}
+function resetChallenge(){if(!confirm("Tamatkan cabaran semasa?"))return;data.challenge=null;data.challengeDays=[];save();renderAll()}
+let journeyStep=0;
+const journeyNames=["Semak Emosi","Cadangan Aktiviti","Aktiviti Fizikal","Latihan Pernafasan","Jurnal Emosi","Analisis & Perkembangan","Motivasi Harian"];
+function startJourney(){if(data.journeyDate!==today()){data.journeyDate=today();data.journeyDone=[];save()}journeyStep=0;go("journey");renderJourney()}
+function journeyDoneStep(){if(data.journeyDate!==today()){data.journeyDate=today();data.journeyDone=[]}if(!data.journeyDone.includes(journeyStep))data.journeyDone.push(journeyStep);save()}
+function journeyMove(dir){
+ if(dir===1){
+  if(journeyStep===0){if(!selectedMood){alert("Sila pilih emosi terlebih dahulu.");return}saveMood(true)}
+  if(journeyStep===4){let text=document.getElementById("journeyJournal")?.value.trim();if(text){data.journals.push({id:Date.now(),text,mood:selectedMood,date:today(),time:nowStamp()});save()}}
+  if(journeyStep===5)renderProgress();
+  journeyDoneStep();
+  if(journeyStep===6){alert("Tahniah! Anda telah melengkapkan perjalanan emosi harian.");go("dashboard");return}
+ }
+ journeyStep=Math.max(0,Math.min(6,journeyStep+dir));renderJourney();
+}
+function renderJourney(){
+ let html="";
+ if(journeyStep===0)html=`<h2>💭 Semak Emosi</h2><p>Bagaimanakah perasaan anda sekarang?</p><div class="mood-grid">${moods.map(([m,e])=>`<button class="mood ${selectedMood===m?'selected':''}" onclick="selectedMood='${m}';renderJourney()"><span>${e}</span><strong>${m}</strong></button>`).join("")}</div>`;
+ if(journeyStep===1)html=`<h2>✨ Cadangan Aktiviti</h2><p>${selectedMood?advice[selectedMood]:"Pilih emosi pada langkah sebelumnya untuk melihat cadangan."}</p><button class="btn soft" onclick="go('suggest')">Lihat Semua Cadangan</button>`;
+ if(journeyStep===2)html=`<h2>🏃 Aktiviti Fizikal</h2><p>Pilih aktiviti ringan yang sesuai dengan kemampuan anda. Anda boleh merekodkan aktiviti melalui menu Aktiviti Fizikal.</p><button class="btn" onclick="go('physical')">Lihat Aktiviti Fizikal</button>`;
+ if(journeyStep===3)html=`<h2>🌬️ Latihan Pernafasan</h2><p>Tarik nafas 4 saat dan hembus nafas 6 saat. Lakukan selama 2 minit mengikut keselesaan.</p><button class="btn" onclick="go('breathing')">Mulakan Latihan</button>`;
+ if(journeyStep===4)html=`<h2>📔 Jurnal Emosi</h2><p>Catat sedikit refleksi tentang hari anda. Langkah ini pilihan dan boleh dibiarkan kosong.</p><textarea id="journeyJournal" placeholder="Apakah perkara yang anda pelajari tentang emosi hari ini?"></textarea>`;
+ if(journeyStep===5)html=`<h2>📊 Analisis & Perkembangan</h2><p>Semak rekod dan perkembangan anda. Gunakan data sebagai ruang refleksi, bukan untuk membandingkan diri dengan orang lain.</p><div class="grid two"><div class="feature bg-peach"><h3>${data.moods.length}</h3><p>Rekod emosi</p></div><div class="feature bg-mint"><h3>${data.activities.length}</h3><p>Aktiviti selesai</p></div></div><button class="btn soft" onclick="go('progress')">Lihat Perkembangan</button>`;
+ if(journeyStep===6)html=`<h2>🌟 Motivasi Harian</h2><p>“${quotes[new Date().getDate()%quotes.length][0]}”</p><p>Terima kasih kerana meluangkan masa untuk memahami diri anda hari ini.</p><button class="btn soft" onclick="go('motivation')">Lihat Motivasi</button>`;
+ document.getElementById("journeyContent").innerHTML=html;
+ document.getElementById("journeyStepText").textContent=`Langkah ${journeyStep+1}/7 · ${journeyNames[journeyStep]}`;
+ document.getElementById("journeyBar").style.width=((journeyStep+1)/7*100)+"%";
+ document.getElementById("journeyBack").disabled=journeyStep===0;
+ document.getElementById("journeyNext").textContent=journeyStep===6?"Selesai ✓":"Seterusnya →";
+}
+const preQuestions=[
+"Saya dapat mengenal pasti emosi yang sedang saya alami.",
+"Saya memahami perkara yang boleh mempengaruhi emosi saya.",
+"Saya mengetahui cara yang sesuai untuk mengurus emosi saya.",
+"Saya mengamalkan aktiviti yang membantu kesejahteraan diri.",
+"Saya yakin untuk mengambil langkah positif apabila berhadapan dengan tekanan."
+];
+const postQuestions=preQuestions;
+const feedbackQuestions=[
+"Website Emotion24-7 mudah digunakan.",
+"Susunan menu dan navigasi mudah difahami.",
+"Maklumat yang disediakan mudah difahami.",
+"Aktiviti yang dicadangkan sesuai untuk dilakukan.",
+"Reka bentuk website menarik dan selesa digunakan.",
+"Saya berpuas hati dengan pengalaman menggunakan website."
+];
+const scale=["Sangat Tidak Setuju","Tidak Setuju","Tidak Pasti","Setuju","Sangat Setuju"];
+function openStudyInfo(){
+ showModal(`<h2>Maklumat Penyertaan Kajian</h2><p>Kajian ini bertujuan menilai perubahan kesejahteraan emosi dan kebolehgunaan website Emotion24-7 selepas tempoh penggunaan selama 14 hari.</p><p>Jika bersetuju, anda akan menjawab soal selidik awal, menggunakan website selama 14 hari dan menjawab soal selidik akhir serta maklum balas penggunaan.</p><p>Penyertaan adalah sukarela. Anda boleh menarik diri pada bila-bila masa. Data kajian pada peranti ini boleh dipadam melalui fungsi padam data. Data yang telah dieksport atau diserahkan kepada penyelidik tidak boleh dipadam secara automatik melalui website ini.</p><p>Data disimpan secara setempat pada browser dan tidak dihantar secara automatik. Jangan masukkan nama, nombor kad pengenalan atau maklumat peribadi dalam ruangan kod peserta.</p><div class="notice">Soal selidik ini ialah instrumen projek yang perlu melalui semakan pakar dan kajian rintis. Ia bukan alat diagnosis klinikal.</div><div class="modal-actions"><button class="btn" onclick="showAgeConsent()">Saya Bersetuju</button><button class="btn soft" onclick="closeModal()">Tidak Menyertai</button></div>`);
+}
+function showAgeConsent(){
+ showModal(`<h2>Pengesahan Umur</h2><p>Untuk menyertai kajian ini, anda mestilah berumur 18 tahun ke atas.</p><label>Umur anda</label><input id="studyAge" type="number" min="1" max="120" placeholder="Masukkan umur"><label>Kod peserta ciptaan anda</label><input id="studyCode" maxlength="30" placeholder="Contoh: P001"><p class="muted">Gunakan kod tanpa nama atau maklumat pengenalan diri.</p><div class="modal-actions"><button class="btn" onclick="confirmStudy()">Teruskan</button><button class="btn soft" onclick="closeModal()">Batal</button></div>`);
+}
+function confirmStudy(){
+ let age=Number(document.getElementById("studyAge").value),code=document.getElementById("studyCode").value.trim();
+ if(age<18||age>120){alert("Kajian ini hanya untuk individu berumur 18 tahun ke atas.");return}
+ if(!code||code.length<2){alert("Sila masukkan kod peserta.");return}
+ if(data.study){alert("Rekod penyertaan kajian telah wujud pada browser ini.");closeModal();return}
+ data.study={code,ageGroup:"18+",consent:true,joined:today(),pre:null,post:null,feedback:null,start:null,completed:false};
+ save();closeModal();showPretest();
+}
+function renderQuestionForm(questions,type){
+ return `<form id="studyForm" onsubmit="submitStudyForm(event,'${type}')">${questions.map((q,i)=>`<div class="question"><p>${i+1}. ${q}</p>${scale.map((s,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j+1}" required> ${j+1} – ${s}</label>`).join("")}</div>`).join("")}<button class="btn" type="submit">Hantar Jawapan</button></form>`;
+}
+function showPretest(){
+ showModal(`<h2>Soal Selidik Awal</h2><p>Sila jawab lima pernyataan berikut berdasarkan keadaan anda pada masa ini.</p>${renderQuestionForm(preQuestions,"pre")}`);
+}
+function submitStudyForm(e,type){
+ e.preventDefault();let form=new FormData(e.target),answers=preQuestions.map((q,i)=>Number(form.get("q"+i)));
+ if(answers.some(x=>!x)){alert("Sila jawab semua soalan.");return}
+ if(type==="pre"){data.study.pre=answers;data.study.start=today();data.study.due=new Date(Date.now()+14*86400000).toISOString().slice(0,10);save();closeModal();alert("Soal selidik awal disimpan. Tempoh penggunaan 14 hari bermula hari ini.");renderAll()}
+ if(type==="post"){data.study.post=answers;save();closeModal();showStudyFeedback()}
+ if(type==="feedback"){data.study.feedback=answers;data.study.feedbackComment=document.getElementById("studyFeedbackComment").value.trim();data.study.completed=true;data.study.completedDate=today();save();closeModal();showModal(`<h2>Terima Kasih! 🎉</h2><p>Anda telah melengkapkan semua peringkat kajian Emotion24-7. Terima kasih atas masa dan kerjasama anda.</p><div class="modal-actions"><button class="btn" onclick="closeModal();renderAll()">Selesai</button></div>`);renderAll()}
+}
+function showPosttest(){
+ if(!data.study||!data.study.pre||data.study.post)return;
+ showModal(`<h2>Soal Selidik Akhir</h2><p>Sila jawab lima pernyataan yang sama berdasarkan keadaan anda selepas menggunakan Emotion24-7.</p>${renderQuestionForm(postQuestions,"post")}`);
+}
+function showStudyFeedback(){
+ showModal(`<h2>Maklum Balas Penggunaan</h2><p>Sila nilaikan pengalaman anda menggunakan website Emotion24-7.</p>${renderQuestionForm(feedbackQuestions,"feedback")}<label>Komen tambahan (pilihan)</label><textarea id="studyFeedbackComment" placeholder="Kongsikan pengalaman anda..."></textarea>`);
+}
+function renderStudy(){
+ let el=document.getElementById("studyStatus");
+ if(!data.study){el.innerHTML='<p class="muted">Anda belum menyertai kajian.</p>';return}
+ let s=data.study;
+ if(s.completed){el.innerHTML=`<div class="notice success">Kajian telah selesai pada ${formatDate(s.completedDate)}. Terima kasih atas penyertaan anda.</div>`;return}
+ if(!s.pre){el.innerHTML=`<p>Kod peserta: <strong>${escapeHTML(s.code)}</strong></p><p>Langkah seterusnya: Soal selidik awal.</p><button class="btn" onclick="showPretest()">Jawab Soal Selidik Awal</button>`;return}
+ let ready=today()>=s.due;
+ el.innerHTML=`<p>Kod peserta: <strong>${escapeHTML(s.code)}</strong></p><p>Tarikh mula: ${formatDate(s.start)}</p><p>Tarikh sasaran soal selidik akhir: ${formatDate(s.due)}</p><div class="progress-track"><div class="progress-fill" style="width:${ready?100:Math.min(100,Math.max(0,(Date.now()-new Date(s.start).getTime())/(14*86400000)*100))}%"></div></div>${ready?'<div class="notice success">Tempoh 14 hari telah dicapai. Anda boleh menjawab soal selidik akhir.</div><button class="btn" onclick="showPosttest()">Mulakan Post-test</button>':'<div class="notice">Teruskan menggunakan Emotion24-7. Peringatan soal selidik akhir akan dipaparkan apabila anda membuka website selepas tempoh 14 hari.</div>'}`;
+}
+function exportStudyCSV(){
+ if(!data.study){alert("Tiada data kajian untuk dieksport.");return}
+ let s=data.study,rows=[["Kod Peserta","Peringkat","Tarikh","Soalan","Skor"]];
+ (s.pre||[]).forEach((v,i)=>rows.push([s.code,"Pre-test",s.start,preQuestions[i],v]));
+ (s.post||[]).forEach((v,i)=>rows.push([s.code,"Post-test",s.completedDate,postQuestions[i],v]));
+ (s.feedback||[]).forEach((v,i)=>rows.push([s.code,"Maklum balas",s.completedDate,feedbackQuestions[i],v]));
+ rows.push([s.code,"Maklumat","Tarikh mula",s.start,""]);
+ rows.push([s.code,"Maklumat","Tarikh sasaran",s.due||"",""]);
+ rows.push([s.code,"Maklumat","Status",s.completed?"Selesai":"Belum selesai",""]);
+ csvDownload("Emotion24-7_Data_Kajian.csv",rows);
+}
+function saveGeneralFeedback(){
+ let rating=document.getElementById("generalRating").value,comment=document.getElementById("generalComment").value.trim();
+ if(!rating&&!comment){alert("Sila masukkan penilaian atau komen.");return}
+ data.generalFeedback.push({rating,comment,date:today(),time:nowStamp()});save();
+ document.getElementById("generalRating").value="";document.getElementById("generalComment").value="";renderAll();alert("Terima kasih atas maklum balas anda.");
+}
+function renderFeedback(){
+ document.getElementById("generalFeedbackList").innerHTML=data.generalFeedback.length?data.generalFeedback.slice().reverse().map(x=>`<div class="entry"><span class="tag">${escapeHTML(x.date)}</span><p><strong>${escapeHTML(x.rating||"Tiada penilaian")}</strong></p><p>${escapeHTML(x.comment||"Tiada komen")}</p></div>`).join(""):'<div class="empty">Belum ada maklum balas.</div>';
+}
+function checkStudyReminder(){
+ if(!data.study||!data.study.pre||data.study.post||data.study.completed)return;
+ if(today()>=data.study.due&&!sessionStorage.getItem("emotion247Reminder")){
+ sessionStorage.setItem("emotion247Reminder","1");
+ showModal(`<h2>Masa untuk Post-test 📝</h2><p>Anda telah mencapai tempoh penggunaan 14 hari. Jika anda bersedia, sila lengkapkan soal selidik akhir dan maklum balas kajian.</p><div class="modal-actions"><button class="btn" onclick="closeModal();showPosttest()">Mulakan Post-test</button><button class="btn soft" onclick="closeModal()">Ingatkan Saya Kemudian</button></div>`);
+ }
+}
+function init(){
+ markVisit();renderAll();
+ if(!sessionStorage.getItem("emotion247Intro")){
+ sessionStorage.setItem("emotion247Intro","1");
+ showModal(`<h2>Selamat Datang ke Emotion24-7! 🌈</h2><p>Emotion24-7 membantu anda mengenali emosi, membuat refleksi kendiri dan meneroka aktiviti yang menyokong kesejahteraan diri.</p><p>Anda boleh menggunakan semua fungsi website tanpa menyertai kajian. Penyertaan kajian keberkesanan adalah secara sukarela dan hanya terbuka kepada individu berumur 18 tahun ke atas.</p><div class="modal-actions"><button class="btn" onclick="closeModal();openStudyInfo()">Ketahui Kajian</button><button class="btn soft" onclick="closeModal()">Teruskan ke Website</button></div>`);
+ }else checkStudyReminder();
+}
+init();
 </script>
 </body>
 </html>
