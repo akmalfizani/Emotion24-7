@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#fff9f4">
-<title>Emotion24-7 | Fahami Emosi, Perkasakan Kesejahteraan Diri</title>
+<title>Emotion24-7 V8.2 | Fahami Emosi, Perkasakan Kesejahteraan Diri</title>
 <style>
 :root{
 --bg:#fffaf6;--white:#fff;--ink:#393747;--muted:#777487;
@@ -2354,8 +2354,32 @@ async function clipDelete(id){const dbx=await voiceDb();return new Promise((res,
 function initVoice(kind){const el=$(kind+'VoicePanel'),field=$(kind==='emotion'?'emotionNote':'journalText');el.innerHTML=`<strong>🎙️ Pilihan Suara</strong><p class="small muted">Rakaman audio disimpan pada peranti ini (IndexedDB). Speech-to-Text mungkin dihantar kepada penyedia browser; jangan gunakan untuk maklumat yang sangat sensitif.</p><div class="actions"><button class="btn secondary sm" id="${kind}Record">● Mula Rakaman</button><button class="btn outline sm" id="${kind}Stop" disabled>■ Berhenti</button><button class="btn mint sm" id="${kind}Speech">🎤 Mula Speech-to-Text</button></div><p class="voice-status" id="${kind}Status" role="status">Sedia.</p><div id="${kind}Preview"></div><div id="${kind}Clips"></div>`;const status=$(kind+'Status'),start=$(kind+'Record'),stop=$(kind+'Stop'),speechBtn=$(kind+'Speech');let rec=null,stream=null,chunks=[],speech=null;
 start.onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){status.textContent='Rakaman tidak disokong. Cuba Chrome/Edge terkini melalui HTTPS.';return;}try{stream=await navigator.mediaDevices.getUserMedia({audio:true});rec=new MediaRecorder(stream);chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};rec.onstop=async()=>{stream?.getTracks().forEach(t=>t.stop());start.disabled=false;stop.disabled=true;const blob=new Blob(chunks,{type:rec.mimeType||'audio/webm'});if(blob.size>8*1024*1024){status.textContent='Rakaman terlalu besar (maksimum 8MB). Cuba sesi lebih pendek.';return;}const id=kind+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);try{await clipStore({id,kind,at:Date.now(),blob});status.textContent='Rakaman berjaya disimpan pada peranti.';await showClips();}catch(e){status.textContent='Tidak dapat menyimpan audio. Semak ruang storan.';}};rec.start();start.disabled=true;stop.disabled=false;status.textContent='Sedang merakam... tekan Berhenti untuk menyimpan.';}catch(e){status.textContent='Akses mikrofon tidak dibenarkan atau tidak tersedia.';}};
 stop.onclick=()=>{if(rec?.state==='recording')rec.stop();};
-const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){speechBtn.disabled=true;speechBtn.title='Speech-to-Text tidak disokong pada browser ini';}
-speechBtn.onclick=()=>{if(speech){speech.stop();speech=null;speechBtn.textContent='🎤 Mula Speech-to-Text';return;}try{speech=new Speech();speech.lang='ms-MY';speech.interimResults=false;speech.continuous=false;speech.onresult=e=>{const words=Array.from(e.results).map(x=>x[0].transcript).join(' ');field.value=(field.value?field.value+' ':'')+words;field.dispatchEvent(new Event('input'));status.textContent='Transkripsi dimasukkan. Semak dan edit sebelum simpan.';};speech.onerror=e=>{status.textContent='Speech-to-Text gagal: '+e.error;};speech.onend=()=>{speech=null;speechBtn.textContent='🎤 Mula Speech-to-Text';};speech.start();speechBtn.textContent='■ Berhenti Speech-to-Text';status.textContent='Sedang mendengar...';}catch(e){status.textContent='Speech-to-Text tidak dapat dimulakan.';speech=null;}};
+const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+const help=document.createElement('div');help.className='notice lav small';help.style.marginTop='10px';
+help.innerHTML='<strong>Alternatif semua browser:</strong> Tekan ruang luahan di atas dan gunakan mikrofon pada papan kekunci telefon (Dictation), atau taip sendiri. Teks yang muncul boleh dianalisis selepas disimpan. Rakaman audio biasa tidak ditranskripsikan secara automatik.';
+el.insertBefore(help,$(kind+'Preview'));
+const errorLabels={"not-allowed":"Akses mikrofon atau pengecaman suara ditolak. Semak kebenaran mikrofon dalam tetapan browser.","service-not-allowed":"Perkhidmatan pengecaman suara tidak dibenarkan pada peranti ini.","no-speech":"Tiada percakapan dikesan. Cuba bercakap lebih dekat dengan mikrofon.","audio-capture":"Mikrofon tidak dapat diakses. Semak peranti dan kebenaran mikrofon.","network":"Perkhidmatan pengecaman suara tidak dapat dihubungi. Semak sambungan internet atau gunakan Dictation papan kekunci.","language-not-supported":"Bahasa Melayu tidak disokong oleh perkhidmatan pengecaman suara ini.","aborted":"Pengecaman dihentikan."};
+let manualStop=false,finalTranscript='',lastError='';
+function speechReset(){speech=null;speechBtn.textContent='🎤 Mula Speech-to-Text';speechBtn.setAttribute('aria-pressed','false');}
+if(!Speech){speechBtn.disabled=true;status.textContent='Speech-to-Text terus tidak tersedia pada browser ini. Gunakan Dictation papan kekunci atau taip dalam ruangan luahan.';}
+speechBtn.onclick=()=>{
+ if(speech){manualStop=true;try{speech.stop();}catch(e){speechReset();}status.textContent='Menghentikan pengecaman...';return;}
+ if(!window.isSecureContext){status.textContent='Pengecaman suara memerlukan HTTPS. Buka website melalui pautan GitHub Pages HTTPS.';return;}
+ try{
+  manualStop=false;finalTranscript='';lastError='';const r=new Speech();speech=r;
+  r.lang='ms-MY';r.interimResults=true;r.continuous=true;
+  r.onstart=()=>{status.textContent='Sedang mendengar. Bercakap sekarang, kemudian tekan Berhenti Speech-to-Text.';};
+  r.onresult=e=>{
+   let interim='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0]?.transcript||'';if(e.results[i].isFinal)finalTranscript+=(finalTranscript?' ':'')+t.trim();else interim+=' '+t;}
+   // Only finalized words are appended, avoiding repeated interim text.
+   if(finalTranscript.trim()){field.value=(field.dataset.speechBase||'')+(field.dataset.speechBase?' ':'')+finalTranscript.trim();field.dispatchEvent(new Event('input',{bubbles:true}));}
+   status.textContent=interim.trim()?'Mendengar: '+interim.trim():'Transkripsi diterima. Anda boleh terus bercakap atau tekan Berhenti.';
+  };
+  r.onerror=e=>{lastError=e.error||'unknown';status.textContent=errorLabels[lastError]||('Pengecaman suara gagal: '+lastError+'. Cuba Dictation papan kekunci.');};
+  r.onend=()=>{if(!lastError&&finalTranscript.trim())status.textContent='Transkripsi selesai. Semak dan betulkan tulisan sebelum simpan.';else if(!lastError)status.textContent='Tiada teks dikesan. Cuba lagi atau gunakan Dictation papan kekunci.';delete field.dataset.speechBase;speechReset();};
+  field.dataset.speechBase=field.value.trim();r.start();speechBtn.textContent='■ Berhenti Speech-to-Text';speechBtn.setAttribute('aria-pressed','true');status.textContent='Memulakan mikrofon...';
+ }catch(e){status.textContent='Speech-to-Text tidak dapat dimulakan pada browser ini. Gunakan Dictation papan kekunci atau taip sendiri.';delete field.dataset.speechBase;speechReset();}
+};
 async function showClips(){const list=$(kind+'Clips');try{const clips=(await clipList()).filter(x=>x.kind===kind).sort((a,b)=>b.at-a.at);list.innerHTML='<h4>Rakaman Tersimpan</h4>'+(!clips.length?'<p class="small muted">Tiada rakaman.</p>':clips.map(x=>`<div class="list-item"><span class="small muted">${esc(displayDate(x.at))}</span><div id="audio_${x.id}"></div><button class="btn danger sm" data-delclip="${x.id}">Padam Audio</button></div>`).join(''));clips.forEach(x=>{const audio=document.createElement('audio');audio.controls=true;const url=URL.createObjectURL(x.blob);audio.src=url;audio.onloadeddata=()=>{};const slot=$('audio_'+x.id);if(slot)slot.appendChild(audio);});list.querySelectorAll('[data-delclip]').forEach(b=>b.onclick=async()=>{if(!confirm('Padam rakaman suara ini?'))return;await clipDelete(b.dataset.delclip);showClips();});}catch(e){list.textContent='Rakaman tidak dapat dimuatkan pada browser ini.';}}
 showClips();}
 initVoice('emotion');initVoice('journal');
@@ -2373,7 +2397,7 @@ render();
 </script>
 <script>
 "use strict";
-/* Emotion24-7 V8: contextual recommendation; no external AI or API. */
+/* Emotion24-7 V8.1: contextual recommendation; no external AI or API. */
 const V8_SIGNALS=[
  {key:'overload',label:'Tekanan tugasan / beban',terms:['assignment','tugasan','kerja banyak','deadline','peperiksaan','exam','study','belajar','serabut','terbeban','stress','stres','tertekan'],activities:['mindful','writing','breath']},
  {key:'anxious',label:'Kerisauan / keresahan',terms:['cemas','gelisah','risau','bimbang','berdebar','takut','panik','anxiety','resah'],activities:['breath','mindful','relax']},
@@ -2440,6 +2464,86 @@ renderSmart=function(){
  };
 };
 renderSmart();
+</script>
+<script>
+"use strict";
+/* Emotion24-7 V8.2 — guided check-in and personalized suggestions.
+   All analysis and recommendation ranking runs locally. */
+const C82={mode:'deep',step:0,mood:'',intensity:5,causes:[],need:'tenang',minutes:5,context:'auto',note:'',results:null};
+const CAUSES82=['Akademik','Kerja','Keluarga','Hubungan','Kewangan','Kesihatan','Keletihan','Tidak pasti'];
+const NEEDS82=[['tenang','Menenangkan fikiran'],['gerak','Melakukan aktiviti fizikal'],['refleksi','Meluahkan perasaan'],['fokus','Meningkatkan fokus'],['rehat','Berehat dan melegakan ketegangan']];
+const CONTEXT82=[['auto','Analisis secara automatik'],...V8_SIGNALS.map(x=>[x.key,x.label]),['none','Tiada petunjuk khusus']];
+const escape82=esc;
+const active82=()=>C82.mode==='quick'?['emotion','needs','review']:['emotion','causes','note','needs','review'];
+function change82(k,v){C82[k]=v;renderCheck82();}
+function renderCheck82(){
+ const host=$('emotionOptions');if(!host)return;
+ const steps=active82(),phase=steps[C82.step]||'emotion';
+ const options=(arr,value,kind)=>arr.map(([v,label])=>`<button type="button" class="btn ${value===v?'primary':'outline'} sm" data-c82="${kind}" data-val="${escape82(v)}">${escape82(label)}</button>`).join('');
+ let content='';
+ if(phase==='emotion')content=`<h3>1. Bagaimana perasaan anda?</h3><div class="emotions">${EMOTIONS.map(([name,emoji])=>`<button type="button" class="emotion-btn ${C82.mood===name?'selected':''}" data-c82="mood" data-val="${name}">${emoji} ${name}</button>`).join('')}</div><label style="margin-top:18px" for="c82Intensity">Intensiti (pilihan): <span id="c82IntensityLabel">${C82.intensity}/10</span></label><input class="field" type="range" min="1" max="10" id="c82Intensity" value="${C82.intensity}"><p class="small muted">Ini penilaian kendiri, bukan ukuran klinikal.</p>`;
+ if(phase==='causes')content=`<h3>2. Apa yang mempengaruhi perasaan anda?</h3><p class="small muted">Pilih lebih daripada satu atau langkau.</p><div class="enhanced-grid">${CAUSES82.map(x=>`<label class="notice lav" style="margin:0"><input type="checkbox" data-c82cause="${escape82(x)}" ${C82.causes.includes(x)?'checked':''}> ${escape82(x)}</label>`).join('')}</div>`;
+ if(phase==='note')content=`<h3>3. Luahkan perasaan</h3><p class="small muted">Taip atau gunakan Speech-to-Text di bawah. Semak dan betulkan teks sebelum meneruskan. Rakaman audio sahaja tidak boleh dianalisis.</p><textarea class="field" id="c82Note" rows="5" placeholder="Apa yang sedang berlaku?">${escape82(C82.note)}</textarea><p class="small muted">Jika Safari tidak menyokong pengecaman suara, gunakan mikrofon Dictation pada papan kekunci.</p>`;
+ if(phase==='needs')content=`<h3>${C82.mode==='quick'?'2':'4'}. Apa yang anda perlukan sekarang?</h3><div class="actions">${options(NEEDS82,C82.need,'need')}</div><label style="margin-top:16px" for="c82Minutes">Masa yang tersedia</label><select class="field" id="c82Minutes"><option value="3" ${C82.minutes===3?'selected':''}>3 minit</option><option value="5" ${C82.minutes===5?'selected':''}>5 minit</option><option value="10" ${C82.minutes===10?'selected':''}>10 minit</option></select>`;
+ if(phase==='review')content=`<h3>Semak sebelum analisis</h3><p><strong>Emosi:</strong> ${escape82(C82.mood)} (${C82.intensity}/10)</p><p><strong>Punca:</strong> ${escape82(C82.causes.join(', ')||'Tidak dinyatakan')}</p><p><strong>Keperluan:</strong> ${escape82(NEEDS82.find(x=>x[0]===C82.need)?.[1])}</p><p><strong>Masa:</strong> ${C82.minutes} minit</p><p><strong>Luahan:</strong> ${escape82(C82.note||'Tidak dinyatakan')}</p><label for="c82Context">Semak petunjuk utama (boleh dibetulkan)</label><select class="field" id="c82Context">${CONTEXT82.map(([v,label])=>`<option value="${v}" ${C82.context===v?'selected':''}>${escape82(label)}</option>`).join('')}</select><p class="small muted">Tafsiran automatik berdasarkan perkataan, bukan diagnosis. Anda boleh mengubahnya.</p>`;
+ host.innerHTML=`<div class="notice mint"><strong>Emotion Check-In Berpandu</strong><p class="small">Pilih cara yang sesuai. Semua maklumat pilihan boleh dilangkau kecuali emosi dan keperluan.</p><div class="actions">${options([['quick','⚡ Quick Check-In'],['deep','💬 Deep Check-In']],C82.mode,'mode')}</div></div><p class="small muted">Langkah ${C82.step+1}/${steps.length}</p><div class="progress" style="margin-bottom:18px"><div class="progress-fill" style="width:${(C82.step+1)/steps.length*100}%"></div></div>${content}<div class="actions" style="margin-top:18px"><button class="btn outline" id="c82Back" ${C82.step===0?'disabled':''}>← Kembali</button><button class="btn primary" id="c82Next">${phase==='review'?'✓ Simpan & Dapatkan Cadangan':'Seterusnya →'}</button></div>`;
+ host.querySelectorAll('[data-c82]').forEach(b=>b.onclick=()=>{const k=b.dataset.c82,v=b.dataset.val;if(k==='mode'){C82.mode=v;C82.step=0;}else C82[k]=v;renderCheck82();});
+ host.querySelectorAll('[data-c82cause]').forEach(b=>b.onchange=()=>{C82.causes=b.checked?[...new Set([...C82.causes,b.dataset.c82cause])]:C82.causes.filter(x=>x!==b.dataset.c82cause);});
+ if($('c82Intensity'))$('c82Intensity').oninput=e=>{C82.intensity=Number(e.target.value);$('c82IntensityLabel').textContent=C82.intensity+'/10';};
+ if($('c82Note'))$('c82Note').oninput=e=>{C82.note=e.target.value;$('emotionNote').value=C82.note;$('emotionNote').dispatchEvent(new Event('input',{bubbles:true}));};
+ if($('c82Minutes'))$('c82Minutes').onchange=e=>C82.minutes=Number(e.target.value);
+ if($('c82Context'))$('c82Context').onchange=e=>C82.context=e.target.value;
+ $('c82Back').onclick=()=>{C82.step=Math.max(0,C82.step-1);renderCheck82();};
+ $('c82Next').onclick=()=>{if(!C82.mood){notify('Pilih emosi terlebih dahulu.');return;}if(phase==='note')C82.note=$('c82Note').value;if(phase!=='review'){C82.step++;renderCheck82();return;}submit82();};
+}
+// Keep original textarea and its voice controls mounted, so recognition callbacks still work.
+const old82renderEmotion=renderEmotion;
+renderEmotion=function(){old82renderEmotion();renderCheck82();};
+const note82=$('emotionNote');
+const options82=$('emotionOptions');
+// The original textarea is retained as the live Speech-to-Text target.
+note82.addEventListener('input',()=>{C82.note=note82.value;const v=$('c82Note');if(v&&v!==document.activeElement)v.value=C82.note;});
+const voice82=$('emotionVoicePanel');
+voice82.insertAdjacentHTML('beforebegin','<p class="small muted" id="c82VoiceHelp">🎤 Untuk Deep Check-In, gunakan Speech-to-Text di bawah. Teks muncul dalam kotak luahan asal dan disalin ke borang berpandu. Safari boleh menggunakan Dictation papan kekunci.</p>');
+// Keep the original textarea visible for speech recognition; remove the old save button from the flow.
+$('saveEmotion').style.display='none';
+function analyze82(text,mood){
+ const cleaned=String(text||'').toLocaleLowerCase('ms-MY').normalize('NFKC');
+ const negatives=/(?:tak|tidak|bukan|no|not|never|x)\s+(?:rasa\s+)?$/i;
+ const hits=[];
+ for(const signal of V8_SIGNALS){let count=0;for(const term of signal.terms){const re=new RegExp('(^|[^\\p{L}\\p{N}])'+term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?=$|[^\\p{L}\\p{N}])','giu');let m;while((m=re.exec(cleaned))!==null){const preceding=cleaned.slice(Math.max(0,m.index-24),m.index);if(!negatives.test(preceding))count++;}}if(count)hits.push({signal,count});}
+ hits.sort((a,b)=>b.count-a.count);return hits;
+}
+function ranked82(){
+ const hits=analyze82(C82.note,C82.mood);let signal=hits[0]?.signal||V8_SIGNALS.find(x=>x.key===V8_MOOD[C82.mood]);
+ if(C82.context==='none')signal=null;else if(C82.context!=='auto')signal=V8_SIGNALS.find(x=>x.key===C82.context);
+ const type=C82.need==='fokus'?'tenang':C82.need==='rehat'?'tenang':C82.need;
+ const previous=db.extra?.recommendSessions||[];
+ const scores=EVIDENCE.map((x,i)=>{let score=0;const preferred=signal?.activities||[];if(preferred.includes(x.key))score+=9-preferred.indexOf(x.key)*2;if(x.kind===type)score+=5;if(x.min<=C82.minutes)score+=3;else score-=3;
+ const feedback=previous.filter(y=>y.name===x.name||y.key===x.key);if(feedback.length>=2){score+=Math.min(3,feedback.filter(y=>y.postMood==='better').length);score-=Math.min(3,feedback.filter(y=>y.postMood==='worse').length*2);}return {x,i,score};});
+ return {hits,signal,items:scores.sort((a,b)=>b.score-a.score).slice(0,3)};
+}
+function submit82(){
+ const record={at:Date.now(),emotion:C82.mood,note:C82.note.trim(),intensity:C82.intensity,causes:[...C82.causes],need:C82.need,minutes:C82.minutes,checkMode:C82.mode,contextOverride:C82.context};
+ db.emotions.push(record);if(!save()){db.emotions.pop();return;}
+ C82.results=ranked82();selectedEmotion='';C82.step=0;render();notify('Check-In berjaya disimpan.');go('recommend');
+}
+// Preserve the user's current check-in choices when navigating.
+const old82go=go;
+go=function(page){old82go(page);if(page==='emotion')renderCheck82();};
+const old82renderSmart=renderSmart;
+renderSmart=function(){
+ if(enhanced.session){renderEvidenceSession();return;}
+ const last=db.emotions.at(-1);if(!last){old82renderSmart();return;}
+ if(!C82.results){C82.mood=last.emotion;C82.note=last.note||'';C82.intensity=last.intensity||5;C82.causes=last.causes||[];C82.need=last.need||'tenang';C82.minutes=last.minutes||5;C82.context=last.contextOverride||'auto';C82.results=ranked82();}
+ const {signal,hits,items}=C82.results;
+ $('recommendContent').innerHTML=`<h3>✨ Cadangan Aktiviti Berdasarkan Check-In</h3><p class="small muted">Analisis teks dijalankan pada peranti. Ini bukan diagnosis atau pengesanan emosi daripada nada suara.</p><div class="notice lav"><strong>Emosi dipilih:</strong> ${escape82(last.emotion)} • <strong>Keperluan:</strong> ${escape82(NEEDS82.find(x=>x[0]===C82.need)?.[1]||'—')}<p class="small">Petunjuk teks: ${escape82(hits.slice(0,3).map(x=>x.signal.label).join(', ')||'Tiada petunjuk jelas')}. ${signal?'Fokus cadangan: '+escape82(signal.label):'Cadangan berdasarkan pilihan pengguna.'}</p></div><p><button class="btn outline sm" id="c82Edit">Ubah Check-In / Tafsiran</button></p>${items.map(({x,i},n)=>`<article class="evidence-card" style="margin:12px 0"><h3>${n+1}. ${escape82(x.name)}</h3><p>${escape82(x.description)}</p><p class="small muted"><strong>Sebab:</strong> ${signal&&signal.activities.includes(x.key)?'Berkaitan dengan petunjuk luahan yang dikenal pasti. ':''}${x.kind===(C82.need==='fokus'||C82.need==='rehat'?'tenang':C82.need)?'Selaras dengan keperluan pilihan anda. ':''}Tempoh asal ${x.min} minit; masa tersedia ${C82.minutes} minit. Boleh berhenti awal.</p><a class="small" href="${escape82(x.url)}" target="_blank" rel="noopener noreferrer">Rujukan penyelidikan</a><div style="margin-top:10px"><button class="btn primary sm" data-c82start="${i}">Mulakan Aktiviti</button></div></article>`).join('')}<p class="small muted">Anda bebas memilih aktiviti lain. Cadangan boleh menjadi kurang tepat apabila teks terlalu ringkas atau mempunyai maksud tersirat.</p>`;
+ $('c82Edit').onclick=()=>{C82.step=0;C82.results=null;go('emotion');};
+ $('recommendContent').querySelectorAll('[data-c82start]').forEach(b=>b.onclick=()=>startEvidence(Number(b.dataset.c82start)));
+};
+// Results are refreshed after new check-ins but not on each page navigation.
+const old82save=save;
+renderCheck82();renderSmart();
 </script>
 </body>
 </html>
