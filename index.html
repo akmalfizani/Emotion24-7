@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ms">
 <head>
@@ -208,6 +207,20 @@ transition:left .2s;box-shadow:12px 0 50px #0002
 @media(prefers-reduced-motion:reduce){
 *{scroll-behavior:auto!important;transition:none!important}
 }
+
+/* Emotion24-7 enhanced modules */
+.enhanced-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.voice-panel{background:#f9f6ff;border:1px solid var(--line);padding:15px;border-radius:16px;margin:12px 0}
+.voice-panel audio{width:100%;margin-top:10px}
+.voice-status{font-size:13px;color:var(--muted);margin:8px 0}
+.choice-line{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.choice-line label{margin:0}.choice-line select{max-width:240px}
+.mini-stat{background:#fff9f2;border-radius:14px;padding:14px}
+.mini-stat strong{display:block;font-size:22px}
+.evidence-card{border:1px solid var(--line);border-radius:16px;padding:17px;background:white}
+.evidence-card h3{margin-bottom:7px}.evidence-card p{font-size:14px}
+.timeline-item{padding:11px 14px;border-left:3px solid var(--coral);margin:9px 0;background:#fffaf6;border-radius:0 12px 12px 0}
+@media(max-width:700px){.enhanced-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -291,6 +304,11 @@ Gunakan Back dan Seterusnya. Menu tepi untuk navigasi pantas.
 </div>
 </div>
 
+<div class="card" style="margin-top:16px" id="quickReliefCard">
+<h3>⚡ Quick Relief</h3><p>Perjalanan ringkas mengikut masa dan pilihan anda. Tidak perlu melengkapkan tujuh langkah.</p>
+<div class="choice-line"><label for="quickMinutes">Masa</label><select class="field" id="quickMinutes"><option value="3">3 minit</option><option value="5" selected>5 minit</option><option value="10">10 minit</option></select><button class="btn primary" id="quickStart">Dapatkan Cadangan</button></div>
+<div id="quickResult" aria-live="polite"></div>
+</div>
 <div class="grid two" style="margin-top:16px">
 <div class="card">
 <h3>🌼 Daily Wellness Journey</h3>
@@ -318,6 +336,7 @@ Emotion24-7 ialah platform refleksi dan penjagaan diri, bukan alat diagnosis ata
 <div class="form-group" style="margin-top:20px">
 <label for="emotionNote">Apa yang mempengaruhi emosi anda? (Optional)</label>
 <textarea class="field" id="emotionNote" placeholder="Tulis sedikit tentang perasaan anda..."></textarea>
+<div class="voice-panel" id="emotionVoicePanel"></div>
 </div>
 <button class="btn primary" id="saveEmotion">Simpan Check-In</button>
 </div>
@@ -331,6 +350,7 @@ Emotion24-7 ialah platform refleksi dan penjagaan diri, bukan alat diagnosis ata
 <h2>✨ Cadangan Aktiviti</h2>
 <p class="muted">Cadangan penjagaan diri berdasarkan emosi anda.</p>
 <div class="card" id="recommendContent"></div>
+<div class="card" style="margin-top:16px"><h3>📚 Research Evidence Hub</h3><p class="muted">Aktiviti pilihan yang mempunyai sokongan penyelidikan. Cadangan tidak menggantikan nasihat profesional.</p><div id="evidenceHub" class="enhanced-grid"></div></div>
 </section>
 
 <section id="activities" class="page">
@@ -344,14 +364,14 @@ Pilih tahap Ringan atau Standard. Hentikan aktiviti jika sakit, pening, sesak na
 
 <section id="breathing" class="page">
 <h2>🌬️ Latihan Pernafasan</h2>
-<p class="muted">Luangkan dua minit untuk bernafas secara tenang.</p>
+<p class="muted">Luangkan masa untuk bernafas secara tenang. Pilih 2 atau 5 minit.</p>
 <div id="breathingRecovery"></div>
 <div class="card" style="text-align:center">
 <div class="breath-circle" id="breathCircle">
 <strong id="breathPhase">Bersedia</strong>
 <span class="small muted" id="breathInstruction">Tarik 4s • Hembus 6s</span>
 </div>
-<div class="timer" id="breathTime">02:00</div>
+<div class="choice-line" style="justify-content:center"><label for="breathDuration">Tempoh</label><select id="breathDuration" class="field" style="max-width:160px"><option value="120">2 minit</option><option value="300">5 minit</option></select></div><div class="timer" id="breathTime">02:00</div>
 <div class="actions" style="justify-content:center">
 <button class="btn primary" id="breathStart">▶ Mula</button>
 <button class="btn secondary" id="breathPause">⏸ Berhenti</button>
@@ -372,6 +392,7 @@ Bernafas secara selesa. Jangan paksa atau tahan nafas.
 <div class="form-group">
 <label for="journalText">Apa yang ingin anda luahkan?</label>
 <textarea class="field" id="journalText" placeholder="Hari ini saya rasa..."></textarea>
+<div class="voice-panel" id="journalVoicePanel"></div>
 </div>
 <button class="btn primary" id="saveJournal">Simpan Jurnal</button>
 </div>
@@ -392,12 +413,14 @@ Bernafas secara selesa. Jangan paksa atau tahan nafas.
 </div>
 <div class="card" style="margin-top:16px">
 <h3>Ringkasan Perkembangan</h3>
-<div id="analyticsSummary"></div>
+<div id="analyticsSummary"></div><div id="wellnessInsights"></div>
 </div>
 <div class="card" style="margin-top:16px">
 <h3>Aktiviti yang Dilaporkan Membantu</h3>
 <p class="small muted">Jumlah respons “Lebih Baik” selepas setiap aktiviti. Data ini berdasarkan laporan kendiri.</p>
-<div id="helpfulChart"></div>
+<div id="helpfulChart"></div></div>
+<div class="card" style="margin-top:16px"><h3>🗓️ Emotion Journey Timeline</h3><div id="emotionTimeline"></div></div>
+<div class="card" style="margin-top:16px"><h3>📄 Wellness Report</h3><div id="wellnessReport"></div><div class="actions"><button class="btn secondary" id="printReport">Cetak / Simpan PDF</button><button class="btn outline" id="exportWellness">Eksport Ringkasan CSV</button></div>
 </div>
 </section>
 
@@ -424,7 +447,7 @@ Bernafas secara selesa. Jangan paksa atau tahan nafas.
 <div class="notice">
 Penyertaan kajian hanya untuk individu berumur 18 tahun dan ke atas. Semua pengguna boleh menggunakan website tanpa menyertai kajian.
 </div>
-<div class="card" id="studyContent"></div>
+<div class="card" id="studyContent"></div><div class="card" style="margin-top:16px"><h3>📈 Analisis WHO-5</h3><div id="who5Chart"></div></div>
 <div class="card" style="margin-top:16px">
 <h3>🔒 Privasi & Pengurusan Data</h3>
 <p>Rekod disimpan dalam localStorage pada browser dan peranti ini sahaja. Tiada penghantaran automatik kepada pihak kajian.</p>
@@ -2265,6 +2288,88 @@ renderStudy();
 /* ============================================
    END EMOTION24-7 VERSION 6.0
 ============================================ */
+</script>
+<script>
+"use strict";
+/* Emotion24-7 Enhancement Pack 7.0 — retains v6 storage and existing modules */
+const WHO5_ITEMS=[
+'I have felt cheerful and in good spirits',
+'I have felt calm and relaxed',
+'I have felt active and vigorous',
+'I woke up feeling fresh and rested',
+'My daily life has been filled with things that interest me'
+];
+const WHO5_LABELS=['At no time','Some of the time','Less than half of the time','More than half of the time','Most of the time','All of the time'];
+const WHO5_SOURCE='https://www.who.int/publications/m/item/WHO-UCN-MSD-MHE-2024.01';
+const EVIDENCE=[
+{key:'breath',name:'Pernafasan perlahan',min:5,description:'Bernafas dengan perlahan dan selesa tanpa menahan nafas.',source:'Breathwork and stress: meta-analysis of randomised-controlled trials',url:'https://pubmed.ncbi.nlm.nih.gov/?term=breathwork+stress+randomized+meta+analysis',kind:'tenang'},
+{key:'mindful',name:'Mindfulness',min:5,description:'Perhatikan nafas dan keadaan sekeliling tanpa menghakimi. Kembali kepada perhatian apabila fikiran melayang.',source:'Mindfulness-based stress reduction and psychological health: meta-analysis',url:'https://pubmed.ncbi.nlm.nih.gov/?term=mindfulness+stress+systematic+review+meta+analysis',kind:'tenang'},
+{key:'walk',name:'Berjalan santai',min:5,description:'Berjalan pada kelajuan selesa di tempat selamat; berehat jika perlu.',source:'Physical activity and mental health: systematic reviews',url:'https://pubmed.ncbi.nlm.nih.gov/?term=physical+activity+stress+systematic+review',kind:'gerak'},
+{key:'stretch',name:'Regangan / yoga lembut',min:5,description:'Lakukan pergerakan ringan tanpa memaksa sendi atau otot.',source:'Yoga for stress: systematic reviews',url:'https://pubmed.ncbi.nlm.nih.gov/?term=yoga+stress+systematic+review',kind:'gerak'},
+{key:'writing',name:'Penulisan ekspresif',min:5,description:'Tuliskan perasaan dan perkara yang sedang difikirkan. Anda boleh berhenti jika tidak selesa.',source:'Expressive writing and psychological symptoms: meta-analyses',url:'https://pubmed.ncbi.nlm.nih.gov/?term=expressive+writing+stress+meta+analysis',kind:'refleksi'},
+{key:'relax',name:'Relaksasi otot berperingkat',min:5,description:'Fokus pada rasa tegang dan santai dalam otot secara lembut; jangan paksa bahagian yang sakit.',source:'Progressive muscle relaxation and stress: systematic reviews',url:'https://pubmed.ncbi.nlm.nih.gov/?term=progressive+muscle+relaxation+stress+systematic+review',kind:'tenang'}
+];
+const enhanced={choice:'tenang',minutes:5,quick:false,session:null,recorders:{},speech:{},drafts:{}};
+const oldRender=render;
+render = function(){oldRender();renderEnhanced();};
+const oldGo=go;
+go = function(page){oldGo(page);try{sessionStorage.setItem('emotion247_lastpage',page);}catch(e){}};
+function ensureExtra(){if(!db.extra||typeof db.extra!=='object')db.extra={};if(!Array.isArray(db.extra.recommendSessions))db.extra.recommendSessions=[];if(!db.extra.who5Version)db.extra.who5Version=null;}
+ensureExtra();
+function whoScore(a){return Array.isArray(a)&&a.length===5&&a.every(v=>Number.isInteger(v)&&v>=0&&v<=5)?a.reduce((x,y)=>x+y,0)*4:null;}
+function whoForm(prefix){return `<p class="notice lav">Official WHO-5 English wording • Think about how you have been feeling <strong>over the last two weeks</strong>. Choose one response for each statement.</p>${WHO5_ITEMS.map((q,i)=>`<div class="form-group"><label>${i+1}. ${esc(q)}</label><select class="field" id="${prefix}${i}"><option value="">Select an answer</option>${WHO5_LABELS.map((label,n)=>`<option value="${n}">${n} — ${label}</option>`).join('')}</select></div>`).join('')}<p class="small muted">WHO-5: 5 items × 0–5; raw total × 4 = 0–100. Higher means better self-reported wellbeing. Source: <a href="${WHO5_SOURCE}" target="_blank" rel="noopener noreferrer">WHO (2024)</a>. English source text is used pending verification of the exact validated Malay wording.</p>`;}
+function whoAnswers(prefix){let a=WHO5_ITEMS.map((_,i)=>$(prefix+i).value);return a.some(x=>x==='')?null:a.map(Number);}
+function prePopup(){popup('WHO-5 — Ujian Pra',whoForm('wpre'),[{label:'Simpan Kemudian',run:closePopup},{label:'Hantar Ujian Pra',kind:'primary',run:()=>{let a=whoAnswers('wpre');if(!a){notify('Jawab kelima-lima item WHO-5.');return;}db.study.pre=a;db.study.startAt=Date.now();db.study.status='active';ensureExtra();db.extra.who5Version='WHO-5 official English';if(save()){closePopup();go('study');notify('Ujian pra WHO-5 disimpan.');}}}]);}
+function postPopup(){if(!studyDue()){notify('Ujian pasca tersedia selepas 14 hari lengkap.');return;}if(db.extra?.who5Version!=='WHO-5 official English'){notify('Rekod kajian lama menggunakan instrumen lain. Jangan label sebagai WHO-5.');return;}popup('WHO-5 — Ujian Pasca',`${whoForm('wpost')}<h3>Maklum Balas Website</h3>${questions(FEEDBACK,'wfb')}<label for="studyComment">Cadangan penambahbaikan (optional)</label><textarea class="field" id="studyComment" maxlength="1000"></textarea>`,[{label:'Simpan Kemudian',run:closePopup},{label:'Hantar & Selesai',kind:'primary',run:()=>{const post=whoAnswers('wpost'),fb=readAnswers('wfb',6);if(!post||!fb){notify('Lengkapkan WHO-5 dan maklum balas.');return;}Object.assign(db.study,{post,feedback:fb,comment:$('studyComment').value.trim(),completedAt:Date.now(),status:'completed'});if(save()){closePopup();go('study');notify('Kajian selesai. Terima kasih!');}}}]);}
+function renderStudy(){const s=db.study;const isWho=db.extra?.who5Version==='WHO-5 official English';$('dashboardStudy').textContent=studyStatus();let html=`<div class="notice mint"><strong>Status:</strong> ${esc(studyStatus())}</div>`;if(s.status==='not_started'||s.status==='declined'){html+=`<h3>Kajian 14 Hari — WHO-5</h3><p>Penyertaan sukarela untuk individu berumur 18 tahun ke atas. WHO-5 mengukur kesejahteraan mental subjektif, bukan tahap stres atau diagnosis.</p><button class="btn primary" id="studyJoin">Baca Maklumat & Sertai</button>`;}else{html+=`<p><strong>Kod peserta:</strong> ${esc(s.code)}</p>`;if(s.startAt)html+=`<p><strong>Tarikh mula:</strong> ${displayDate(s.startAt)}</p>`;if(s.status==='pending_pre')html+=`<button class="btn primary" id="studyPre">Jawab Ujian Pra WHO-5</button>`;if(s.status==='active'){const elapsed=Date.now()-s.startAt;const pct=Math.min(100,Math.max(0,elapsed/(14*DAY)*100));html+=`<div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div><p class="small muted">Penilaian pasca tersedia selepas 14 hari lengkap (Hari 15).</p>`;if(studyDue())html+=isWho?`<button class="btn primary" id="studyPost">Jawab Ujian Pasca WHO-5</button>`:`<div class="notice">Kajian ini bermula dengan soal selidik versi lama. Data tidak boleh ditukar menjadi skor WHO-5. Tamatkan kajian lama atau mulakan kajian WHO-5 baharu selepas membuat sandaran.</div>`;}if(s.status==='completed'){if(isWho){html+=`<h3>Keputusan WHO-5</h3><p>Pra: <strong>${whoScore(s.pre)??'—'}/100</strong> • Pasca: <strong>${whoScore(s.post)??'—'}/100</strong></p><p>Perubahan: <strong>${whoScore(s.post)!==null&&whoScore(s.pre)!==null?(whoScore(s.post)-whoScore(s.pre))+' mata':'—'}</strong></p>`;}else html+='<div class="notice">Rekod kajian lama (instrumen kendiri), bukan WHO-5. Rekod dikekalkan tanpa penukaran.</div>';}if(s.status!=='completed')html+='<button class="btn danger sm" id="studyWithdraw">Tarik Diri</button>';}$('studyContent').innerHTML=html;if($('studyJoin'))$('studyJoin').onclick=studyConsent;if($('studyPre'))$('studyPre').onclick=prePopup;if($('studyPost'))$('studyPost').onclick=postPopup;if($('studyWithdraw'))$('studyWithdraw').onclick=withdrawStudy;renderWhoChart();}
+function renderWhoChart(){const el=$('who5Chart');if(!el)return;const s=db.study;if(db.extra?.who5Version!=='WHO-5 official English'||!s.pre){el.innerHTML='<p class="muted">Graf WHO-5 akan tersedia selepas ujian pra WHO-5 dilengkapkan. Rekod instrumen lama tidak ditukar.</p>';return;}const pre=whoScore(s.pre),post=whoScore(s.post);el.innerHTML=`<div class="enhanced-grid"><div class="mini-stat">Pra<strong>${pre??'—'}/100</strong></div><div class="mini-stat">Pasca<strong>${post??'—'}/100</strong></div><div class="mini-stat">Perubahan<strong>${post===null?'Belum tersedia':(post-pre)+' mata'}</strong></div></div><div style="margin-top:15px">${chart([['Pra',pre??0],...(post===null?[]:[['Pasca',post]])])}</div><p class="small muted">Skor lebih tinggi menunjukkan kesejahteraan yang dilaporkan lebih baik. Perubahan bukan bukti sebab-akibat.</p>`;}
+function studyConsent(){popup('Maklumat Kajian WHO-5 & Persetujuan',`<p><strong>Tujuan:</strong> Menilai perubahan kesejahteraan mental subjektif melalui WHO-5.</p><p><strong>Prosedur:</strong> WHO-5 pra, penggunaan website selama 14 hari, WHO-5 pasca bermula Hari 15, dan enam soalan maklum balas.</p><p><strong>Kelayakan:</strong> Individu 18 tahun ke atas sahaja.</p><p><strong>Kesukarelaan:</strong> Boleh menarik diri tanpa menjejaskan penggunaan website.</p><p><strong>Privasi:</strong> Rekod kajian disimpan setempat; tiada penghantaran automatik. Fungsi Speech-to-Text mungkin diproses oleh pembekal browser.</p><p><strong>Risiko:</strong> Refleksi emosi boleh menyebabkan ketidakselesaan; pengguna boleh berhenti pada bila-bila masa.</p><p class="notice">Prototaip penyelidikan: semak kelulusan etika, dokumen persetujuan dan kaedah pengurusan data sebelum merekrut peserta sebenar.</p><label><input type="checkbox" id="ageCheck"> Saya berumur 18 tahun ke atas.</label><label><input type="checkbox" id="consentCheck"> Saya bersetuju secara sukarela.</label>`,[{label:'Tidak Sertai',run:()=>{db.study.status='declined';save();closePopup();render();}},{label:'Teruskan',kind:'primary',run:()=>{if(!$('ageCheck').checked||!$('consentCheck').checked){notify('Sahkan umur dan persetujuan dahulu.');return;}closePopup();popup('Kod Peserta',`<label for="studyCode">Kod peserta manual (tanpa nama sebenar)</label><input class="field" id="studyCode" maxlength="24" placeholder="Contoh: P001">`,[{label:'Batal',run:closePopup},{label:'Simpan Kod',kind:'primary',run:()=>{const code=$('studyCode').value.trim();if(!/^[a-zA-Z0-9_-]{2,24}$/.test(code)){notify('Gunakan 2–24 aksara: huruf, nombor, _ atau -.');return;}db.study={...emptyData().study,status:'pending_pre',code,consentAt:Date.now()};ensureExtra();db.extra.who5Version='WHO-5 official English';if(save()){closePopup();go('study');}}}]);}}]);}
+function renderEvidence(){const el=$('evidenceHub');if(!el)return;el.innerHTML=EVIDENCE.map((x,i)=>`<div class="evidence-card"><h3>${esc(x.name)}</h3><p>${esc(x.description)}</p><p class="small muted">Cadangan sesi: ${x.min} minit. Tempoh ini cadangan reka bentuk, bukan dos klinikal yang disahkan.</p><p class="small"><a href="${x.url}" target="_blank" rel="noopener noreferrer">Kajian / carian rujukan ↗</a></p><button class="btn secondary sm" data-evidence="${i}">Pilih Aktiviti</button></div>`).join('');el.querySelectorAll('[data-evidence]').forEach(b=>b.onclick=()=>startEvidence(Number(b.dataset.evidence)));}
+function startEvidence(i){const x=EVIDENCE[i];enhanced.session={i,left:x.min*60,deadline:0,running:false,started:false};renderEvidenceSession();}
+function renderEvidenceSession(){const el=$('recommendContent'),ss=enhanced.session;if(!ss)return;const x=EVIDENCE[ss.i];el.innerHTML=`<h3>${esc(x.name)}</h3><p>${esc(x.description)}</p><div class="timer" id="evidenceTime">${clock(ss.left)}</div><div class="actions"><button class="btn primary" id="eStart">▶ Mula</button><button class="btn secondary" id="ePause">⏸ Berhenti</button><button class="btn outline" id="eReset">↻ Reset</button><button class="btn mint" id="eDone">✓ Selesai</button></div><p class="small muted">Jika tidak selesa, berhenti. Ini bukan rawatan kecemasan.</p>`;$('eStart').onclick=()=>{if(ss.left<=0)ss.left=x.min*60;ss.deadline=Date.now()+ss.left*1000;ss.running=true;ss.started=true;};$('ePause').onclick=()=>{if(ss.running)ss.left=Math.max(0,Math.ceil((ss.deadline-Date.now())/1000));ss.running=false;};$('eReset').onclick=()=>{ss.running=false;ss.left=x.min*60;renderEvidenceSession();};$('eDone').onclick=()=>{if(!ss.started){notify('Tekan Mula dahulu.');return;}ss.running=false;ensureExtra();db.extra.recommendSessions.push({at:Date.now(),name:x.name,durationSeconds:x.min*60-ss.left,postMood:null});const index=db.extra.recommendSessions.length-1;save();popup('Emotion Check Selepas Aktiviti',`<p>Bagaimana perasaan anda selepas ${esc(x.name)}?</p>`,[{label:'Lebih Baik',run:()=>finishEvidence(index,'better')},{label:'Sama Sahaja',run:()=>finishEvidence(index,'same')},{label:'Kurang Selesa',run:()=>finishEvidence(index,'worse')},{label:'Langkau',run:()=>finishEvidence(index,null)}]);};}
+function finishEvidence(index,mood){db.extra.recommendSessions[index].postMood=mood;save();enhanced.session=null;closePopup();render();if(mood==='same'||mood==='worse')popup('Sokongan Pemulihan',`<p>Anda boleh berehat, cuba latihan pernafasan atau menulis jurnal. Jangan paksa diri melakukan aktiviti yang tidak selesa.</p>`,[{label:'Rehat',run:closePopup},{label:'Pernafasan',run:()=>{closePopup();go('breathing');}},{label:'Jurnal',run:()=>{closePopup();go('journal');}}]);}
+function renderSmart(){const last=db.emotions.at(-1);const container=$('recommendContent');if(enhanced.session){renderEvidenceSession();return;}const mood=last?.emotion||'Belum dipilih';container.innerHTML=`<h3>✨ Smart Recommendation</h3><p>Cadangan berdasarkan emosi, masa dan pilihan anda — bukan diagnosis atau algoritma klinikal.</p><p><span class="pill">Emosi: ${esc(mood)}</span></p><div class="choice-line"><label for="recTime">Masa tersedia</label><select id="recTime" class="field"><option value="3">3 minit</option><option value="5">5 minit</option><option value="10">10 minit</option></select></div><div class="choice-line"><label for="recType">Pilihan aktiviti</label><select id="recType" class="field"><option value="tenang">Menenangkan</option><option value="gerak">Pergerakan fizikal</option><option value="refleksi">Refleksi</option></select></div><button class="btn primary" id="recommendNow">Lihat Cadangan</button><div id="recommendResult" style="margin-top:14px"></div>`;$('recTime').value=String(enhanced.minutes);$('recType').value=enhanced.choice;$('recommendNow').onclick=()=>{enhanced.minutes=Number($('recTime').value);enhanced.choice=$('recType').value;const options=EVIDENCE.filter(x=>x.kind===enhanced.choice);const pick=options[0];$('recommendResult').innerHTML=`<div class="notice mint"><strong>${esc(pick.name)}</strong><p>${esc(pick.description)}</p><p class="small">Kenapa? Pilihan ini sepadan dengan jenis aktiviti yang anda pilih; ia tidak semestinya paling berkesan untuk semua orang.</p><button class="btn secondary" id="recLaunch">Buka Aktiviti</button></div>`;$('recLaunch').onclick=()=>startEvidence(EVIDENCE.indexOf(pick));};}
+function renderEnhanced(){ensureExtra();renderEvidence();renderSmart();renderInsights();renderWhoChart();}
+function renderInsights(){const all=[...db.activities.map(x=>({name:x.name||x.activity||'Aktiviti fizikal',mood:x.postMood})),...db.extra.recommendSessions.map(x=>({name:x.name,mood:x.postMood}))];const by={};all.forEach(x=>{if(!x.mood)return;const name=x.name;by[name]??={total:0,better:0};by[name].total++;if(x.mood==='better')by[name].better++;});const rows=Object.entries(by).sort((a,b)=>b[1].better-a[1].better);$('wellnessInsights').innerHTML=`<h3 style="margin-top:20px">My Wellness Insights</h3>${rows.length?rows.slice(0,5).map(([name,x])=>`<p><strong>${esc(name)}</strong>: ${x.better}/${x.total} respons Lebih Baik (${Math.round(100*x.better/x.total)}%)</p>`).join(''):'<p class="muted">Selesaikan aktiviti dan berikan maklum balas untuk melihat insight peribadi.</p>'}<p class="small muted">Maklum balas kendiri, bukan bukti keberkesanan klinikal. Perhatikan bilangan sesi.</p>`;const events=[...db.emotions.map(x=>({at:x.at,title:'Emotion Check-In',info:x.emotion})),...db.activities.map(x=>({at:x.at,title:'Aktiviti Fizikal',info:x.name||x.activity||''})),...db.extra.recommendSessions.map(x=>({at:x.at,title:'Cadangan Aktiviti',info:x.name})),...db.breathing.map(x=>({at:x.at,title:'Latihan Pernafasan',info:'Sesi selesai'})),...db.journals.map(x=>({at:x.at,title:'Jurnal Emosi',info:'Catatan peribadi (kandungan disembunyikan)'}))].filter(x=>Number.isFinite(Number(x.at))).sort((a,b)=>b.at-a.at).slice(0,25);$('emotionTimeline').innerHTML=events.length?events.map(x=>`<div class="timeline-item"><strong>${esc(x.title)}</strong> · ${esc(displayDate(x.at))}<p class="small muted">${esc(x.info)}</p></div>`).join(''):'<p class="muted">Belum ada rekod untuk timeline.</p>';const who=db.extra.who5Version==='WHO-5 official English';$('wellnessReport').innerHTML=`<div class="enhanced-grid"><div class="mini-stat">Check-In<strong>${db.emotions.length}</strong></div><div class="mini-stat">Aktiviti<strong>${db.activities.length+db.extra.recommendSessions.length}</strong></div><div class="mini-stat">Pernafasan<strong>${db.breathing.length}</strong></div><div class="mini-stat">Jurnal<strong>${db.journals.length}</strong></div>${who?`<div class="mini-stat">WHO-5 Pra<strong>${whoScore(db.study.pre)??'—'}</strong></div><div class="mini-stat">WHO-5 Pasca<strong>${whoScore(db.study.post)??'—'}</strong></div>`:''}</div><p class="small muted" style="margin-top:12px">Laporan ringkasan tanpa kandungan jurnal atau rakaman audio. Angka menunjukkan penggunaan dan laporan kendiri, bukan diagnosis.</p>`;}
+// Auto-save text drafts in sessionStorage (not included in research exports).
+['emotionNote','journalText'].forEach(id=>{const field=$(id),key='emotion247_draft_'+id;try{field.value=sessionStorage.getItem(key)||'';}catch(e){}field.addEventListener('input',()=>{try{sessionStorage.setItem(key,field.value);}catch(e){}});});
+const originalSaveEmotion=$('saveEmotion').onclick; $('saveEmotion').onclick=function(){originalSaveEmotion();if(!$('emotionNote').value)try{sessionStorage.removeItem('emotion247_draft_emotionNote');}catch(e){}};
+const originalSaveJournal=$('saveJournal').onclick; $('saveJournal').onclick=function(){originalSaveJournal();if(!$('journalText').value)try{sessionStorage.removeItem('emotion247_draft_journalText');}catch(e){}};
+$('quickStart').onclick=()=>{const minutes=Number($('quickMinutes').value);$('quickResult').innerHTML=`<div class="notice mint"><strong>Quick Relief (${minutes} minit)</strong><p>Mulakan dengan Emotion Check-In atau pilih latihan yang sesuai. Anda boleh berhenti pada bila-bila masa.</p><div class="actions"><button class="btn secondary" id="quickEmotion">Semak Emosi</button><button class="btn primary" id="quickRecommend">Cadangan Aktiviti</button></div></div>`;$('quickEmotion').onclick=()=>go('emotion');$('quickRecommend').onclick=()=>{enhanced.minutes=minutes;go('recommend');};};
+$('breathDuration').addEventListener('change',()=>{if(breath.running){notify('Berhenti dan reset dahulu sebelum menukar tempoh.');return;}breath.left=Number($('breathDuration').value);breath.started=false;$('breathTime').textContent=clock(breath.left);});
+const originalResetBreath=resetBreath;resetBreath=function(){originalResetBreath();breath.left=Number($('breathDuration').value);$('breathTime').textContent=clock(breath.left);};
+$('breathReset').onclick=resetBreath;
+// Fix recorded duration to reflect selected breathing length.
+const originalFinishBreath=$('breathFinish').onclick;$('breathFinish').onclick=()=>{const n=db.breathing.length;const remaining=breath.running?Math.max(0,Math.ceil((breath.deadline-Date.now())/1000)):breath.left;originalFinishBreath();if(db.breathing.length>n){db.breathing.at(-1).durationSeconds=Math.max(0,Number($('breathDuration').value)-remaining);save();}};
+$('printReport').onclick=()=>window.print();
+$('exportWellness').onclick=()=>{const rows=[['Metric','Value'],['CheckIns',db.emotions.length],['Activities',db.activities.length+db.extra.recommendSessions.length],['Breathing',db.breathing.length],['Journals',db.journals.length]];if(db.extra.who5Version==='WHO-5 official English')rows.push(['WHO5_Pre',whoScore(db.study.pre)??''],['WHO5_Post',whoScore(db.study.post)??'']);downloadCSV('Emotion24-7_Wellness_Report.csv',rows);};
+// WHO-5-specific research export; old self-developed questionnaire records remain explicitly labeled.
+$('exportStudy').onclick=()=>{const s=db.study,who=db.extra.who5Version==='WHO-5 official English';const rows=[['ParticipantCode','Instrument','Status','StartAt','CompletedAt',...Array.from({length:5},(_,i)=>'Pre_Item_'+(i+1)),...Array.from({length:5},(_,i)=>'Post_Item_'+(i+1)),'WHO5_Pre_0_100','WHO5_Post_0_100','WHO5_Change',...FEEDBACK.map((_,i)=>'Usability_'+(i+1))], [s.code,who?'WHO-5 English':'Legacy self-developed (NOT WHO-5)',s.status,s.startAt?new Date(s.startAt).toISOString():'',s.completedAt?new Date(s.completedAt).toISOString():'',...Array.from({length:5},(_,i)=>s.pre?.[i]??''),...Array.from({length:5},(_,i)=>s.post?.[i]??''),who?(whoScore(s.pre)??''):'',who?(whoScore(s.post)??''):'',who&&whoScore(s.pre)!==null&&whoScore(s.post)!==null?whoScore(s.post)-whoScore(s.pre):'',...Array.from({length:6},(_,i)=>s.feedback?.[i]??'')]];downloadCSV('Emotion24-7_Kajian.csv',rows);};
+// IndexedDB voice clips. Browser microphone permission required; audio never sent by this code.
+const VOICE_DB='emotion247_voice_v1';
+function voiceDb(){return new Promise((resolve,reject)=>{if(!window.indexedDB)return reject(new Error('IndexedDB tidak tersedia'));const r=indexedDB.open(VOICE_DB,1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('clips'))r.result.createObjectStore('clips',{keyPath:'id'});};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
+async function clipStore(record){const dbx=await voiceDb();return new Promise((res,rej)=>{const tx=dbx.transaction('clips','readwrite');tx.objectStore('clips').put(record);tx.oncomplete=()=>{dbx.close();res();};tx.onerror=()=>{dbx.close();rej(tx.error);};});}
+async function clipList(){const dbx=await voiceDb();return new Promise((res,rej)=>{const tx=dbx.transaction('clips','readonly'),r=tx.objectStore('clips').getAll();r.onsuccess=()=>{dbx.close();res(r.result);};r.onerror=()=>{dbx.close();rej(r.error);};});}
+async function clipDelete(id){const dbx=await voiceDb();return new Promise((res,rej)=>{const tx=dbx.transaction('clips','readwrite');tx.objectStore('clips').delete(id);tx.oncomplete=()=>{dbx.close();res();};tx.onerror=()=>{dbx.close();rej(tx.error);};});}
+function initVoice(kind){const el=$(kind+'VoicePanel'),field=$(kind==='emotion'?'emotionNote':'journalText');el.innerHTML=`<strong>🎙️ Pilihan Suara</strong><p class="small muted">Rakaman audio disimpan pada peranti ini (IndexedDB). Speech-to-Text mungkin dihantar kepada penyedia browser; jangan gunakan untuk maklumat yang sangat sensitif.</p><div class="actions"><button class="btn secondary sm" id="${kind}Record">● Mula Rakaman</button><button class="btn outline sm" id="${kind}Stop" disabled>■ Berhenti</button><button class="btn mint sm" id="${kind}Speech">🎤 Mula Speech-to-Text</button></div><p class="voice-status" id="${kind}Status" role="status">Sedia.</p><div id="${kind}Preview"></div><div id="${kind}Clips"></div>`;const status=$(kind+'Status'),start=$(kind+'Record'),stop=$(kind+'Stop'),speechBtn=$(kind+'Speech');let rec=null,stream=null,chunks=[],speech=null;
+start.onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){status.textContent='Rakaman tidak disokong. Cuba Chrome/Edge terkini melalui HTTPS.';return;}try{stream=await navigator.mediaDevices.getUserMedia({audio:true});rec=new MediaRecorder(stream);chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};rec.onstop=async()=>{stream?.getTracks().forEach(t=>t.stop());start.disabled=false;stop.disabled=true;const blob=new Blob(chunks,{type:rec.mimeType||'audio/webm'});if(blob.size>8*1024*1024){status.textContent='Rakaman terlalu besar (maksimum 8MB). Cuba sesi lebih pendek.';return;}const id=kind+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);try{await clipStore({id,kind,at:Date.now(),blob});status.textContent='Rakaman berjaya disimpan pada peranti.';await showClips();}catch(e){status.textContent='Tidak dapat menyimpan audio. Semak ruang storan.';}};rec.start();start.disabled=true;stop.disabled=false;status.textContent='Sedang merakam... tekan Berhenti untuk menyimpan.';}catch(e){status.textContent='Akses mikrofon tidak dibenarkan atau tidak tersedia.';}};
+stop.onclick=()=>{if(rec?.state==='recording')rec.stop();};
+const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){speechBtn.disabled=true;speechBtn.title='Speech-to-Text tidak disokong pada browser ini';}
+speechBtn.onclick=()=>{if(speech){speech.stop();speech=null;speechBtn.textContent='🎤 Mula Speech-to-Text';return;}try{speech=new Speech();speech.lang='ms-MY';speech.interimResults=false;speech.continuous=false;speech.onresult=e=>{const words=Array.from(e.results).map(x=>x[0].transcript).join(' ');field.value=(field.value?field.value+' ':'')+words;field.dispatchEvent(new Event('input'));status.textContent='Transkripsi dimasukkan. Semak dan edit sebelum simpan.';};speech.onerror=e=>{status.textContent='Speech-to-Text gagal: '+e.error;};speech.onend=()=>{speech=null;speechBtn.textContent='🎤 Mula Speech-to-Text';};speech.start();speechBtn.textContent='■ Berhenti Speech-to-Text';status.textContent='Sedang mendengar...';}catch(e){status.textContent='Speech-to-Text tidak dapat dimulakan.';speech=null;}};
+async function showClips(){const list=$(kind+'Clips');try{const clips=(await clipList()).filter(x=>x.kind===kind).sort((a,b)=>b.at-a.at);list.innerHTML='<h4>Rakaman Tersimpan</h4>'+(!clips.length?'<p class="small muted">Tiada rakaman.</p>':clips.map(x=>`<div class="list-item"><span class="small muted">${esc(displayDate(x.at))}</span><div id="audio_${x.id}"></div><button class="btn danger sm" data-delclip="${x.id}">Padam Audio</button></div>`).join(''));clips.forEach(x=>{const audio=document.createElement('audio');audio.controls=true;const url=URL.createObjectURL(x.blob);audio.src=url;audio.onloadeddata=()=>{};const slot=$('audio_'+x.id);if(slot)slot.appendChild(audio);});list.querySelectorAll('[data-delclip]').forEach(b=>b.onclick=async()=>{if(!confirm('Padam rakaman suara ini?'))return;await clipDelete(b.dataset.delclip);showClips();});}catch(e){list.textContent='Rakaman tidak dapat dimuatkan pada browser ini.';}}
+showClips();}
+initVoice('emotion');initVoice('journal');
+// Full backup including voice blobs as base64 in JSON. Prior v6 JSON is also supported for restore.
+function blobToBase64(blob){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});}
+$('exportBackup').onclick=()=>popup('Sandaran Penuh Emotion24-7',`<p>Sandaran mengandungi catatan peribadi, kajian dan rakaman suara (jika ada). Simpan fail di tempat yang selamat.</p>`,[{label:'Batal',run:closePopup},{label:'Eksport JSON + Audio',kind:'primary',run:async()=>{try{const clips=await clipList();const audio=[];for(const c of clips)audio.push({id:c.id,kind:c.kind,at:c.at,type:c.blob.type,base64:await blobToBase64(c.blob)});downloadFile('Emotion24-7_Backup_Full.json',JSON.stringify({...db,_backupFormat:'emotion247_full_v7',_voiceClips:audio},null,2),'application/json;charset=utf-8');closePopup();notify('Sandaran penuh berjaya disediakan.');}catch(e){notify('Sandaran audio gagal. Sila semak sokongan browser.');}}}]);
+$('restoreBackup').onclick=()=>{$('restoreFile').value='';$('restoreFile').click();};
+$('restoreFile').onchange=async event=>{const file=event.target.files?.[0];if(!file)return;if(file.size>35*1024*1024){notify('Fail terlalu besar (maksimum 35MB).');return;}let raw;try{raw=JSON.parse(await file.text());}catch(e){notify('JSON tidak sah.');return;}const keys=['emotions','activities','breathing','journals','feedback','journeys'];if(!raw||!keys.every(k=>Array.isArray(raw[k]))||!raw.study||typeof raw.study!=='object'||!raw.challenges){notify('Format sandaran tidak serasi.');return;}const clips=Array.isArray(raw._voiceClips)?raw._voiceClips:[];if(clips.length>80||clips.some(c=>!['emotion','journal'].includes(c.kind)||typeof c.base64!=='string'||c.base64.length>12e6)){notify('Data audio sandaran tidak sah atau terlalu besar.');return;}const restored=normalize(raw);delete restored._voiceClips;delete restored._backupFormat;popup('Pulihkan Data & Sambung Profil',`<p><strong>Kod:</strong> ${esc(restored.study.code||'Tiada')}</p><p>Check-In: ${restored.emotions.length} • Jurnal: ${restored.journals.length} • Audio: ${clips.length}</p><p class="notice">Semua rekod semasa akan digantikan. Buat sandaran dahulu jika perlu.</p>`,[{label:'Batal',run:closePopup},{label:'Pulihkan',kind:'primary',run:async()=>{const old=db;try{for(const c of clips){const binary=atob(c.base64),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);await clipStore({id:c.id,kind:c.kind,at:c.at,blob:new Blob([bytes],{type:c.type||'audio/webm'})});}localStorage.setItem(STORAGE,JSON.stringify(restored));db=restored;ensureExtra();closePopup();go('dashboard');notify('Profil dipulihkan. Rekod lama tersedia.');}catch(e){db=old;notify('Pemulihan tidak lengkap. Semak ruang storan.');}}}]);};
+// Keep the current page on reload, except avoid auto-resuming study popups.
+try{const page=sessionStorage.getItem('emotion247_lastpage');if(page&&$(page)&&page!=='study')go(page);}catch(e){}
+// Timer for evidence activities.
+setInterval(()=>{const ss=enhanced.session;if(ss?.running){ss.left=Math.max(0,Math.ceil((ss.deadline-Date.now())/1000));const clockEl=$('evidenceTime');if(clockEl)clockEl.textContent=clock(ss.left);if(ss.left===0){ss.running=false;notify('Masa cadangan aktiviti tamat. Tekan Selesai.');}}},350);
+render();
+
 </script>
 </body>
 </html>
