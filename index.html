@@ -2371,5 +2371,75 @@ setInterval(()=>{const ss=enhanced.session;if(ss?.running){ss.left=Math.max(0,Ma
 render();
 
 </script>
+<script>
+"use strict";
+/* Emotion24-7 V8: contextual recommendation; no external AI or API. */
+const V8_SIGNALS=[
+ {key:'overload',label:'Tekanan tugasan / beban',terms:['assignment','tugasan','kerja banyak','deadline','peperiksaan','exam','study','belajar','serabut','terbeban','stress','stres','tertekan'],activities:['mindful','writing','breath']},
+ {key:'anxious',label:'Kerisauan / keresahan',terms:['cemas','gelisah','risau','bimbang','berdebar','takut','panik','anxiety','resah'],activities:['breath','mindful','relax']},
+ {key:'anger',label:'Kemarahan / kekecewaan',terms:['marah','geram','bengang','kecewa','geramnya','frust'],activities:['walk','breath','writing']},
+ {key:'tired',label:'Keletihan',terms:['penat','letih','lesu','mengantuk','kurang tidur','tak cukup tidur','tidak cukup tidur'],activities:['stretch','mindful','relax']},
+ {key:'sad',label:'Kesedihan / kesunyian',terms:['sedih','sunyi','kesunyian','menangis','rindu','murung'],activities:['walk','writing','mindful']},
+ {key:'focus',label:'Kesukaran fokus',terms:['susah fokus','tak fokus','hilang fokus','sukar fokus','fikiran bercelaru','susah concentrate'],activities:['mindful','walk','breath']}
+];
+const V8_MOOD={Cemas:'anxious',Marah:'anger',Terbeban:'overload',Sedih:'sad'};
+function v8Analysis(note,mood){
+ const text=String(note||'').toLocaleLowerCase('ms-MY').normalize('NFKC').slice(0,6000);
+ const scores=V8_SIGNALS.map(s=>({s,hits:s.terms.filter(t=>text.includes(t))})).filter(x=>x.hits.length);
+ scores.sort((a,b)=>b.hits.length-a.hits.length);
+ const selected=scores[0]?.s||V8_SIGNALS.find(x=>x.key===V8_MOOD[mood])||null;
+ return {selected,signals:scores.slice(0,3).map(x=>x.s.label),source:scores.length?'luahan teks':selected?'emosi yang dipilih':'pilihan pengguna',ambiguous:scores.length>1&&scores[0].hits.length===scores[1].hits.length};
+}
+function v8Rank(note,mood,minutes,preference){
+ const result=v8Analysis(note,mood);
+ const keys=result.selected?.activities||['mindful','walk','writing'];
+ return {result,items:EVIDENCE.map((x,i)=>({x,i,score:(keys.includes(x.key)?(4-keys.indexOf(x.key))*3:0)+(x.kind===preference?3:0)+(x.min<=minutes?2:0)})).sort((a,b)=>b.score-a.score).slice(0,3)};
+}
+const v8OldSaveEmotion=$('saveEmotion').onclick;
+$('saveEmotion').onclick=function(){
+ const before=db.emotions.length;
+ v8OldSaveEmotion();
+ if(db.emotions.length>before){
+   popup('✨ Check-In Disimpan',`<p>Luahan anda boleh digunakan untuk memilih aktiviti yang lebih relevan. Analisis dilakukan pada peranti ini menggunakan petunjuk perkataan, bukan diagnosis.</p>`,[
+   {label:'Lihat Cadangan Aktiviti',kind:'primary',run:()=>{closePopup();go('recommend');}},
+   {label:'Kekal di Check-In',run:closePopup}
+   ]);
+ }
+};
+const v8Note=$('emotionNote');
+const v8Preview=document.createElement('div');v8Preview.id='v8Preview';v8Preview.className='notice lav';v8Preview.style.marginTop='12px';v8Preview.setAttribute('aria-live','polite');
+v8Note.closest('.form-group').appendChild(v8Preview);
+function v8ShowPreview(){const note=v8Note.value.trim();if(!note){v8Preview.innerHTML='<span class="small muted">Tip: Luahan teks atau Speech-to-Text membantu sistem memilih cadangan yang lebih relevan. Rakaman audio sahaja tidak dianalisis secara automatik.</span>';return;}const r=v8Analysis(note,selectedEmotion);v8Preview.innerHTML=`<strong>Pratonton petunjuk luahan:</strong> ${esc(r.signals.join(', ')||'Belum dikenal pasti')}<p class="small muted">Ini padanan kata kunci sahaja. Anda boleh membetulkan atau mengabaikan hasil ini.</p>`;}
+v8Note.addEventListener('input',v8ShowPreview);v8ShowPreview();
+/* Override V7 Smart Recommendation while preserving evidence timers and original modules. */
+renderSmart=function(){
+ const el=$('recommendContent');if(enhanced.session){renderEvidenceSession();return;}
+ const last=db.emotions.at(-1);const mood=last?.emotion||'Belum dipilih';const note=last?.note||'';
+ const initial=v8Analysis(note,mood);
+ el.innerHTML=`<h3>✨ Emotion-Aware Activity Recommendation</h3>
+ <p class="muted">Cadangan berdasarkan kandungan luahan yang disimpan, emosi, masa dan pilihan aktiviti. Sistem menggunakan peraturan setempat, bukan AI atau diagnosis.</p>
+ ${last?`<p><span class="pill">Check-In: ${esc(mood)}</span></p>`:'<div class="notice">Belum ada Check-In. Anda masih boleh memilih aktiviti sendiri.</div>'}
+ <div class="notice lav"><strong>Petunjuk daripada luahan:</strong> ${esc(initial.signals.join(', ')||'Belum dikenal pasti')}<p class="small muted">Sumber: ${esc(initial.source)}. ${initial.ambiguous?'Terdapat beberapa petunjuk yang sama kuat; semak sendiri tafsirannya.':''}</p></div>
+ <div class="form-group"><label for="v8Context">Luahan untuk cadangan (boleh disunting)</label><textarea id="v8Context" class="field" rows="3" placeholder="Tulis atau semak transkripsi anda..."></textarea><p class="small muted">Teks ini tidak dihantar ke pelayan. Perubahan di sini tidak mengubah rekod Check-In asal.</p></div>
+ <div class="choice-line"><label for="v8Signal">Petunjuk utama (boleh betulkan)</label><select class="field" id="v8Signal"><option value="auto">Kenal pasti daripada teks</option>${V8_SIGNALS.map(s=>`<option value="${s.key}">${esc(s.label)}</option>`).join('')}<option value="none">Tiada / pilih sendiri</option></select></div>
+ <div class="choice-line"><label for="recTime">Masa tersedia</label><select id="recTime" class="field"><option value="3">3 minit</option><option value="5">5 minit</option><option value="10">10 minit</option></select></div>
+ <div class="choice-line"><label for="recType">Pilihan aktiviti</label><select id="recType" class="field"><option value="tenang">Menenangkan</option><option value="gerak">Pergerakan fizikal</option><option value="refleksi">Refleksi</option></select></div>
+ <button class="btn primary" id="recommendNow">Analisis & Lihat Cadangan</button><div id="recommendResult" style="margin-top:14px" aria-live="polite"></div>`;
+ $('v8Context').value=note;$('recTime').value=String(enhanced.minutes);$('recType').value=enhanced.choice;
+ $('recommendNow').onclick=()=>{
+  const text=$('v8Context').value.trim();enhanced.minutes=Number($('recTime').value);enhanced.choice=$('recType').value;
+  const chosen=$('v8Signal').value;const ranked=v8Rank(text,mood,enhanced.minutes,enhanced.choice);
+  if(chosen==='none')ranked.result.selected=null;
+  else if(chosen!=='auto')ranked.result.selected=V8_SIGNALS.find(s=>s.key===chosen)||null;
+  if(chosen!=='auto'){
+   const keys=ranked.result.selected?.activities||[];
+   ranked.items=EVIDENCE.map((x,i)=>({x,i,score:(keys.includes(x.key)?(4-keys.indexOf(x.key))*3:0)+(x.kind===enhanced.choice?3:0)+(x.min<=enhanced.minutes?2:0)})).sort((a,b)=>b.score-a.score).slice(0,3);
+  }
+  $('recommendResult').innerHTML=`<div class="notice mint"><strong>Cadangan berdasarkan: ${esc(ranked.result.selected?.label||'pilihan pengguna')}</strong><p class="small">${ranked.result.selected?'Petunjuk ini membantu menyusun pilihan, tetapi tidak menentukan keadaan psikologi anda.':'Tiada petunjuk khusus; cadangan mengikut pilihan anda.'} Aktiviti boleh diubah dan tidak semestinya sesuai untuk semua orang.</p></div>`+ranked.items.map(({x,i})=>`<div class="evidence-card" style="margin:10px 0"><h3>${esc(x.name)}</h3><p>${esc(x.description)}</p><p class="small muted">Mengapa? ${esc(x.kind===enhanced.choice?'Sepadan dengan jenis aktiviti pilihan anda.':'Salah satu pilihan berdasarkan petunjuk luahan atau masa tersedia.')} Tempoh cadangan ${x.min} minit; anda boleh berhenti lebih awal.</p><p class="small"><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">Lihat sumber penyelidikan</a></p><button class="btn secondary sm" data-v8start="${i}">Mulakan Aktiviti</button></div>`).join('');
+  $('recommendResult').querySelectorAll('[data-v8start]').forEach(b=>b.onclick=()=>startEvidence(Number(b.dataset.v8start)));
+ };
+};
+renderSmart();
+</script>
 </body>
 </html>
